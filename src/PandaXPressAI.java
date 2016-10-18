@@ -3,16 +3,17 @@ import connectK.BoardModel;
 import java.awt.Point;
 import java.util.*;
 
-public class PandaXPressAI extends CKPlayer 
-{
-	public PandaXPressAI(byte player, BoardModel state) 
-	{
-		super(player, state);
-		teamName = "PandaXPress";
-		count = 0;
-		emptySlots = new LinkedList<Point>();
-	}
+public class PandaXPressAI extends CKPlayer {
 	
+	private byte otherPlayerValue;
+	
+    public PandaXPressAI(byte player, BoardModel state) {
+        super(player, state);
+        teamName = "PandaXPress";
+        otherPlayerValue = getOtherPlayerValue(player);
+    }
+    
+    // Method use to compute the score of a direction
 	// Method use to compute the score of a direction
 	int computeDirectionScore(int leftoverPieces, boolean reachOtherPlayer, boolean reachBorder)
 	{
@@ -281,44 +282,100 @@ public class PandaXPressAI extends CKPlayer
         return computeDirectionScore(leftoverPieces, reachOtherPlayer, reachBorder);
     }
     
-	@Override
-	public Point getMove(BoardModel state) 
-	{
-		for (int i=0; i < state.getWidth(); ++i)
-		{
-			for (int j=0; j < state.getHeight(); ++j)
-			{
-				if (state.getSpace(i, j) == 0)
-				{
-					emptySlots.add(new Point(i, j));
-					count++;
-				}
-			}
-		}
-		
-		// If count is 0 return null
-		if (count != 0)
-		{
-			int randomIndex = rand.nextInt(count);
-			Point move = emptySlots.get(randomIndex);
-	
-			emptySlots.clear();
-			count = 0;
-			System.out.println("Down Right Score is: " + scoreDR(move.x, move.y, state));
-			return move;
-		}
-		
-		return null;
-	}
+    
+    private int boardStateScore(BoardModel currentState) {
+        int score = 0;
+        for (int i=0; i < currentState.getWidth(); ++i) {
+            for (int j=0; j < currentState.getHeight(); ++i) {
+                if (currentState.getSpace(i,j) == player) {
+                    score += scoreR(i, j, currentState);
+                    score += scoreL(i, j, currentState);
+                    score += scoreU(i, j, currentState);
+                    score += scoreD(i, j, currentState);
+                    score += scoreUR(i, j, currentState);
+                    score += scoreUL(i, j, currentState);
+                    score += scoreDR(i, j, currentState);
+                    score += scoreDL(i, j, currentState);
+                }
+            }
+        }
+        return score;
+    }
+    
+    private Point implementMinMax(BoardModel state) {
+        Vector<Point> moves = getAvailableMoves(state);
+        Point bestMove = moves.get(0);
+        int bestScore = Integer.MIN_VALUE;
+        for (Point move:moves) {
+        	int score = returnMin(state.clone().placePiece(move, otherPlayerValue));
+        	if (score > bestScore) {
+        		bestMove = move;
+        		bestScore = score;
+        	}
+        }
+        return bestMove;      
+    }
+    
+    private int returnMin(BoardModel state) {
+    	if (state.winner() != -1) {
+    		return evaluateWinner(state.winner());
+    	}
+        Vector<Point> moves = getAvailableMoves(state);
+        int worstScore = Integer.MAX_VALUE;
+        for (Point move:moves) {
+        	int score = returnMax(state.clone().placePiece(move, player));
+        	if (score < worstScore) {
+        		worstScore = score;
+        	}
+        }
+        return worstScore; 
+    }
+    
+    private int returnMax(BoardModel state) {
+    	if (state.winner() != -1) {
+    		return evaluateWinner(state.winner());
+    	}
+        Vector<Point> moves = getAvailableMoves(state);
+        int bestScore = Integer.MIN_VALUE;
+        for (Point move:moves) {
+        	int score = returnMin(state.clone().placePiece(move, otherPlayerValue));
+        	if (score > bestScore) {
+        		bestScore = score;
+        	}
+        }
+        return bestScore; 
+    }
+    
+    private int evaluateWinner(byte winner) {
+    	if (winner == player) {
+    		return Integer.MAX_VALUE;
+    	}
+    	return Integer.MIN_VALUE;
+    }
+    
+    private Vector<Point> getAvailableMoves(BoardModel state) {
+          return null;
+    }
+    
+    private byte getOtherPlayerValue(byte player) {
+    	if (player == 1) {
+    		return 2;
+    	}
+    	else return 1;
+    }
+    
+    
+    
+    @Override
+    public Point getMove(BoardModel state) 
+    {    
+        return implementMinMax(state);
+    }
 
-	@Override
-	public Point getMove(BoardModel state, int deadline) 
-	{
-		return getMove(state);
-	}
-	
-	private List<Point> emptySlots;
-	private int count;
-	private static Random rand = new Random();
-	
+    @Override
+    public Point getMove(BoardModel state, int deadline) 
+    {
+        return getMove(state);
+    }
+    
 }
