@@ -7,7 +7,7 @@ public final class Utils {
     public static int boardStateScore(BoardModel currentState, byte player) {
         int score = 0;
         for (int i=0; i < currentState.getWidth(); ++i) {
-            for (int j=0; j < currentState.getHeight(); ++i) {
+            for (int j=0; j < currentState.getHeight(); ++j) {
                 if (currentState.getSpace(i,j) == player) {
                     score += Utils.scoreR(i, j, currentState, player);
                     score += Utils.scoreL(i, j, currentState, player);
