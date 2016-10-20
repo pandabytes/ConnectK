@@ -78,7 +78,7 @@ public class PandaXPressAI extends CKPlayer
           {
               for (int j = 0; j < state.getHeight(); j++)
               {
-                  if (state.getSpace(i, j) == 0);
+                  if (state.getSpace(i, j) == 0)
                   {
                       availableMoves.add(new Point(i, j));
                   }
