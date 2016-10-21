@@ -1,7 +1,10 @@
 import connectK.CKPlayer;
 import connectK.BoardModel;
 import java.awt.Point;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.*;
+import java.util.PriorityQueue;
 
 public class PandaXPressAI extends CKPlayer 
 {
@@ -9,28 +12,30 @@ public class PandaXPressAI extends CKPlayer
     {
         super(player, state);
         teamName = "PandaXPress";
-        count = 0;
-        emptySlots = new LinkedList<Point>();
         otherPlayerValue = getOtherPlayerValue(player);
     }
     
+    // Do minimax search to find the best worst move
     private Point implementMinMax(BoardModel state, int plyDepth) {
         if (plyDepth <= 1) { 
             return null;
         }
-        Vector<Point> moves = getAvailableMoves(state);
-        Point bestMove = moves.get(0);
+        Map<Point, Integer> moves = getAvailableMoves(state, otherPlayerValue);
+        PriorityQueue<Pair> priorityMoves = Utils.convertToPriorityQueue(moves);
         int bestScore = Integer.MIN_VALUE;
-        for (Point move:moves) {
-            int score = returnMin(state.clone().placePiece(move, otherPlayerValue), 0, plyDepth);
+        Point bestMove = priorityMoves.peek().point; 
+        		
+        for (Pair pair : priorityMoves) {
+            int score = returnMin(state.clone().placePiece(pair.point, otherPlayerValue), 1, plyDepth);
             if (score > bestScore) {
-                bestMove = move;
+                bestMove = pair.point;
                 bestScore = score;
             }
         }
         return bestMove;      
     }
     
+    // Return the minimum value of the generated states
     private int returnMin(BoardModel state, int currentDepth, int plyDepth) {
         if (state.winner() != -1) {
             return evaluateWinner(state.winner());
@@ -38,10 +43,13 @@ public class PandaXPressAI extends CKPlayer
         if (currentDepth == plyDepth) {
             return Utils.boardStateScore(state, player);
         }
-        Vector<Point> moves = getAvailableMoves(state);
+        
+        Map<Point, Integer> moves = getAvailableMoves(state, player);
+        PriorityQueue<Pair> priorityMoves = Utils.convertToPriorityQueue(moves);
         int worstScore = Integer.MAX_VALUE;
-        for (Point move:moves) {
-            int score = returnMax(state.clone().placePiece(move, player), currentDepth+1, plyDepth);
+        
+        for (Pair pair : priorityMoves) {
+            int score = returnMax(state.clone().placePiece(pair.point, player), currentDepth+1, plyDepth);
             if (score < worstScore) {
                 worstScore = score;
             }
@@ -49,6 +57,7 @@ public class PandaXPressAI extends CKPlayer
         return worstScore; 
     }
     
+    // Return the maximum value of the generated states
     private int returnMax(BoardModel state, int currentDepth, int plyDepth) {
         if (state.winner() != -1) {
             return evaluateWinner(state.winner());
@@ -56,10 +65,13 @@ public class PandaXPressAI extends CKPlayer
         if (currentDepth == plyDepth) {
             return Utils.boardStateScore(state, player);
         }
-        Vector<Point> moves = getAvailableMoves(state);
+        
+        Map<Point, Integer> moves = getAvailableMoves(state, otherPlayerValue);
+        PriorityQueue<Pair> priorityMoves = Utils.convertToPriorityQueue(moves);
         int bestScore = Integer.MIN_VALUE;
-        for (Point move:moves) {
-            int score = returnMin(state.clone().placePiece(move, otherPlayerValue), currentDepth+1, plyDepth);
+        
+        for (Pair pair : priorityMoves) {
+            int score = returnMin(state.clone().placePiece(pair.point, otherPlayerValue), currentDepth+1, plyDepth);
             if (score > bestScore) {
                 bestScore = score;
             }
@@ -67,6 +79,7 @@ public class PandaXPressAI extends CKPlayer
         return bestScore; 
     }
     
+    // Evaluate the winner
     private int evaluateWinner(byte winner) {
         if (winner == player) {
             return Integer.MAX_VALUE;
@@ -74,22 +87,24 @@ public class PandaXPressAI extends CKPlayer
         return Integer.MIN_VALUE;
     }
     
-    private Vector<Point> getAvailableMoves(BoardModel state) {
-          Vector<Point> availableMoves = new Vector<Point>();
-          
-          for (int i = 0; i < state.getWidth(); i++)
-          {
-              for (int j = 0; j < state.getHeight(); j++)
-              {
-                  if (state.getSpace(i, j) == 0)
-                  {
-                      availableMoves.add(new Point(i, j));
-                  }
-              }
-          }
-          return availableMoves;
+    // Get all the avaialbe moves
+    private Map<Point, Integer> getAvailableMoves(BoardModel state, byte player) 
+    {
+    	Map<Point, Integer> availableMoves = new HashMap<Point, Integer>();
+    	for (int i = 0; i < state.getWidth(); i++)
+    	{
+    		for (int j = 0; j < state.getHeight(); j++)
+    		{
+    			if (state.getSpace(i, j) == player)
+    			{
+    				Utils.getMovesPriority(state, availableMoves, i, j);
+    			}
+    		}
+    	}
+    	return availableMoves;
     }
     
+    // Get the value of the other player
     private byte getOtherPlayerValue(byte player) {
         if (player == 1) {
             return 2;
@@ -97,10 +112,17 @@ public class PandaXPressAI extends CKPlayer
         else return 1;
     }
     
+    int count = 0;
+    
+    
     @Override
     public Point getMove(BoardModel state) 
-    {
-        return implementMinMax(state, 3);
+    {	
+//    	return new Point(count++, 0);
+    	if (player == 1 && startState == state)
+    		return new Point(0,0);
+    	else
+    		return implementMinMax(state, 3);
     }
 
     @Override
@@ -109,9 +131,6 @@ public class PandaXPressAI extends CKPlayer
         return getMove(state);
     }
     
-    private List<Point> emptySlots;
-    private int count;
-    private static Random rand = new Random();
     private byte otherPlayerValue;
     
 }
