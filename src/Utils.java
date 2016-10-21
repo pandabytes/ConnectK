@@ -1,3 +1,8 @@
+import java.awt.Point;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.PriorityQueue;
+
 import connectK.BoardModel;
 
 public final class Utils {
@@ -22,6 +27,135 @@ public final class Utils {
         }
         return score;
     }
+    
+    // Sort the moves based on their priority
+    public static PriorityQueue<Pair> convertToPriorityQueue( Map<Point, Integer> availableMoves)
+    {
+    	PriorityQueue<Pair> priorityQueue = new PriorityQueue<Pair>(10, new Pair());
+    	
+    	for (Map.Entry<Point, Integer> entry : availableMoves.entrySet())
+    	{
+    		Pair p = new Pair(entry.getKey(), entry.getValue());
+    		priorityQueue.add(p);
+    	}
+    	
+    	return priorityQueue;
+    }
+    
+    // Get the priority of each move
+    public static void getMovesPriority(BoardModel state, Map<Point, Integer> availableMoves, int i, int j)
+    {
+    	int steps = Math.floorDiv(state.getkLength(), 2);
+    	
+    	// Go right
+		for (int k = 1; k < steps + 1; k++)
+		{
+			if (!checkOutOfRange(i + k, state.getWidth()) && state.getSpace(i + k, j) == 0)
+			{
+				Point p = new Point(i + k, j);
+				if (availableMoves.containsKey(p))
+					availableMoves.put(p, availableMoves.get(p) + 1);
+				else
+					availableMoves.put(p, 1);
+			}
+		}
+		
+		// Go left
+		for (int k = 1; k < steps + 1; k++)
+		{
+			if (!checkOutOfRange(i - k, state.getWidth()) && state.getSpace(i - k, j) == 0)
+			{
+				Point p = new Point(i - k, j);
+				if (availableMoves.containsKey(p))
+					availableMoves.put(p, availableMoves.get(p) + 1);
+				else
+					availableMoves.put(p, 1);
+			}
+		}
+		
+		// Go up
+		for (int k = 1; k < steps + 1; k++)
+		{
+			if (!checkOutOfRange(j + k, state.getHeight()) && state.getSpace(i, j + k) == 0)
+			{
+				Point p = new Point(i, j + k);
+				if (availableMoves.containsKey(p))
+					availableMoves.put(p, availableMoves.get(p) + 1);
+				else
+					availableMoves.put(p, 1);
+			}
+		}
+		
+		// Go down
+		for (int k = 1; k < steps + 1; k++)
+		{
+			if (!checkOutOfRange(j - k, state.getHeight()) && state.getSpace(i, j - k) == 0)
+			{
+				Point p = new Point(i, j - k);
+				if (availableMoves.containsKey(p))
+					availableMoves.put(p, availableMoves.get(p) + 1);
+				else
+					availableMoves.put(p, 1);
+			}
+		}
+		
+		// Go up right
+		for (int k = 1; k < steps + 1; k++)
+		{
+			if ( !(checkOutOfRange(i + k, state.getWidth()) || checkOutOfRange(j + k, state.getHeight())) &&
+				   state.getSpace(i + k, j + k) == 0)
+			{
+				Point p = new Point(i + k, j + k);
+				if (availableMoves.containsKey(p))
+					availableMoves.put(p, availableMoves.get(p) + 1);
+				else
+					availableMoves.put(p, 1);
+			}
+		}
+		
+		// Go up left
+		for (int k = 1; k < steps + 1; k++)
+		{
+			if ( !(checkOutOfRange(i - k, state.getWidth()) || checkOutOfRange(j + k, state.getHeight())) &&
+				   state.getSpace(i - k, j + k) == 0)
+			{
+				Point p = new Point(i - k, j + k);
+				if (availableMoves.containsKey(p))
+					availableMoves.put(p, availableMoves.get(p) + 1);
+				else
+					availableMoves.put(p, 1);
+			}
+		}
+		
+		// Go down left
+		for (int k = 1; k < steps + 1; k++)
+		{
+			if ( !(checkOutOfRange(i - k, state.getWidth()) || checkOutOfRange(j - k, state.getHeight())) &&
+				   state.getSpace(i - k, j - k) == 0)
+			{
+				Point p = new Point(i - k, j - k);
+				if (availableMoves.containsKey(p))
+					availableMoves.put(p, availableMoves.get(p) + 1);
+				else
+					availableMoves.put(p, 1);
+			}
+		}
+		
+		// Go down right
+		for (int k = 1; k < steps + 1; k++)
+		{
+			if ( !(checkOutOfRange(i + k, state.getWidth()) || checkOutOfRange(j - k, state.getHeight())) &&
+				   state.getSpace(i + k, j - k) == 0)
+			{
+				Point p = new Point(i + k, j - k);
+				if (availableMoves.containsKey(p))
+					availableMoves.put(p, availableMoves.get(p) + 1);
+				else
+					availableMoves.put(p, 1);
+			}
+		}
+    }
+    
 	// Method use to compute the score of a direction
 	private static int computeDirectionScore(int leftoverPieces, boolean reachOtherPlayer, boolean reachBorder)
 	{
@@ -289,5 +423,4 @@ public final class Utils {
        
         return computeDirectionScore(leftoverPieces, reachOtherPlayer, reachBorder);
     }
-    
 }
