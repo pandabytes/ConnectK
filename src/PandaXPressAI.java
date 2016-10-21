@@ -22,7 +22,7 @@ public class PandaXPressAI extends CKPlayer
         Point bestMove = moves.get(0);
         int bestScore = Integer.MIN_VALUE;
         for (Point move:moves) {
-            int score = returnMin(state.clone().placePiece(move, otherPlayerValue), 1, plyDepth);
+            int score = returnMin(state.clone().placePiece(move, otherPlayerValue), 0, plyDepth);
             if (score > bestScore) {
                 bestMove = move;
                 bestScore = score;
@@ -34,6 +34,9 @@ public class PandaXPressAI extends CKPlayer
     private int returnMin(BoardModel state, int currentDepth, int plyDepth) {
         if (state.winner() != -1) {
             return evaluateWinner(state.winner());
+        }
+        if (currentDepth == plyDepth) {
+            return Utils.boardStateScore(state, player);
         }
         Vector<Point> moves = getAvailableMoves(state);
         int worstScore = Integer.MAX_VALUE;
@@ -56,7 +59,7 @@ public class PandaXPressAI extends CKPlayer
         Vector<Point> moves = getAvailableMoves(state);
         int bestScore = Integer.MIN_VALUE;
         for (Point move:moves) {
-            int score = returnMin(state.clone().placePiece(move, otherPlayerValue), currentDepth, plyDepth);
+            int score = returnMin(state.clone().placePiece(move, otherPlayerValue), currentDepth+1, plyDepth);
             if (score > bestScore) {
                 bestScore = score;
             }
