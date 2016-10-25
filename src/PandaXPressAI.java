@@ -13,10 +13,10 @@ public class PandaXPressAI extends CKPlayer
         super(player, state);
         teamName = "PandaXPress";
         otherPlayerValue = getOtherPlayerValue(player);
-    }
+    }    
     
     // Do minimax search to find the best worst move
-    private Point implementMinMax(BoardModel state, int plyDepth) {
+    private Point alphaBetaPruning(BoardModel state, int plyDepth) {
         if (plyDepth <= 1) { 
             return null;
         }
@@ -26,65 +26,71 @@ public class PandaXPressAI extends CKPlayer
         if (priorityMoves.size() == 0)
         	return new Point(0, 0);
         
-        int bestScore = Integer.MIN_VALUE;
+        int alpha = Integer.MIN_VALUE;
+        int beta = Integer.MAX_VALUE;
         Point bestMove = priorityMoves.peek().point; 
         
         for (Pair pair : priorityMoves) {
-            int score = returnMin(state.clone().placePiece(pair.point, otherPlayerValue), 1, plyDepth);
-            if (score > bestScore) {
+            int score = returnMin(state.clone().placePiece(pair.point, otherPlayerValue), 1, plyDepth, alpha, beta);
+            if (score > alpha) {
                 bestMove = pair.point;
-                bestScore = score;
+                alpha = score;
             }
         }
         return bestMove;      
     }
     
     // Return the minimum value of the generated states
-    private int returnMin(BoardModel state, int currentDepth, int plyDepth) {
+    private int returnMin(BoardModel state, int currentDepth, int plyDepth, int alpha, int beta) {
         if (state.winner() != -1) {
             return evaluateWinner(state.winner());
         }
+        
         if (currentDepth == plyDepth) {
-            //return Utils.boardStateScore(state, player, otherPlayerValue);
         	return Utils.numberOfPossibleWins(state, player, otherPlayerValue) - 
         		   Utils.numberOfPossibleWins(state, otherPlayerValue, player);
         }
         
         Map<Point, Integer> moves = getAvailableMoves(state);
         PriorityQueue<Pair> priorityMoves = Utils.convertToPriorityQueue(moves);
-        int worstScore = Integer.MAX_VALUE;
+        int localBeta = Integer.MAX_VALUE;
         
         for (Pair pair : priorityMoves) {
-            int score = returnMax(state.clone().placePiece(pair.point, player), currentDepth+1, plyDepth);
-            if (score < worstScore) {
-                worstScore = score;
+            int score = returnMax(state.clone().placePiece(pair.point, player), currentDepth+1, plyDepth, alpha, localBeta);
+            if (score <= alpha) {
+            	return alpha;
+            }
+            if (score < localBeta) {
+                localBeta = score;
             }
         }
-        return worstScore; 
+        return localBeta; 
     }
     
     // Return the maximum value of the generated states
-    private int returnMax(BoardModel state, int currentDepth, int plyDepth) {
+    private int returnMax(BoardModel state, int currentDepth, int plyDepth, int alpha, int beta) {
         if (state.winner() != -1) {
             return evaluateWinner(state.winner());
         }
         if (currentDepth == plyDepth) {
-            //return Utils.boardStateScore(state, player, otherPlayerValue);
         	return Utils.numberOfPossibleWins(state, player, otherPlayerValue) - 
          		   Utils.numberOfPossibleWins(state, otherPlayerValue, player);
         }
         
         Map<Point, Integer> moves = getAvailableMoves(state);
         PriorityQueue<Pair> priorityMoves = Utils.convertToPriorityQueue(moves);
-        int bestScore = Integer.MIN_VALUE;
-        
+        int localAlpha = Integer.MIN_VALUE;
         for (Pair pair : priorityMoves) {
-            int score = returnMin(state.clone().placePiece(pair.point, otherPlayerValue), currentDepth+1, plyDepth);
-            if (score > bestScore) {
-                bestScore = score;
+            int score = returnMin(state.clone().placePiece(pair.point, otherPlayerValue), currentDepth+1, 
+            		              plyDepth, localAlpha, beta);
+            if (score >= beta) {
+                return beta;
+            }
+            if (localAlpha < score) {
+            	localAlpha = score;
             }
         }
-        return bestScore; 
+        return localAlpha; 
     }
     
     // Evaluate the winner
@@ -123,7 +129,7 @@ public class PandaXPressAI extends CKPlayer
     @Override
     public Point getMove(BoardModel state) 
     {	
-    	return implementMinMax(state, 4);
+    	return alphaBetaPruning(state, 9);
     }
 
     @Override
