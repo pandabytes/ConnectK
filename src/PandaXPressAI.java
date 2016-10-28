@@ -13,6 +13,7 @@ public class PandaXPressAI extends CKPlayer
         super(player, state);
         teamName = "PandaXPress";
         otherPlayerValue = getOtherPlayerValue(player);
+        movesMade = new HashSet<>();
     }    
     
     // Do minimax search to find the best worst move
@@ -20,28 +21,38 @@ public class PandaXPressAI extends CKPlayer
         if (plyDepth <= 1) { 
             return null;
         }
-        Map<Point, Integer> moves = getAvailableMoves(state);
+        Map<Point, Integer> moves = getAvailableMoves(state, movesMade);
         PriorityQueue<Pair> priorityMoves = Utils.convertToPriorityQueue(moves);
-        
-        if (priorityMoves.size() == 0)
-        	return new Point(0, 0);
-        
+        if (movesMade.size() == 0) {
+        	Point p = new Point(state.getWidth() / 2, state.getHeight() / 2);
+        	if (state.getSpace(p) != 0) {
+        		p.x = p.x+1;
+        		p.y = p.y+1;
+        	}
+        	movesMade.add(p);
+        	return p;
+        }
         int alpha = Integer.MIN_VALUE;
         int beta = Integer.MAX_VALUE;
         Point bestMove = priorityMoves.peek().point; 
         
         for (Pair pair : priorityMoves) {
-            int score = returnMin(state.clone().placePiece(pair.point, otherPlayerValue), 1, plyDepth, alpha, beta);
+        	HashSet<Point> n = new HashSet<>(movesMade);
+        	n.add(pair.point);
+            int score = returnMin(state.clone().placePiece(pair.point, otherPlayerValue), 1, plyDepth, 
+            		alpha, beta, n);
+            System.out.println(score);
             if (score > alpha) {
                 bestMove = pair.point;
                 alpha = score;
             }
         }
+        movesMade.add(bestMove);
         return bestMove;      
     }
     
     // Return the minimum value of the generated states
-    private int returnMin(BoardModel state, int currentDepth, int plyDepth, int alpha, int beta) {
+    private int returnMin(BoardModel state, int currentDepth, int plyDepth, int alpha, int beta, HashSet<Point> m) {
         if (state.winner() != -1) {
             return evaluateWinner(state.winner());
         }
@@ -50,13 +61,14 @@ public class PandaXPressAI extends CKPlayer
         	return Utils.numberOfPossibleWins(state, player, otherPlayerValue) - 
         		   Utils.numberOfPossibleWins(state, otherPlayerValue, player);
         }
-        
-        Map<Point, Integer> moves = getAvailableMoves(state);
+        Map<Point, Integer> moves = getAvailableMoves(state, m);
         PriorityQueue<Pair> priorityMoves = Utils.convertToPriorityQueue(moves);
         int localBeta = Integer.MAX_VALUE;
         
         for (Pair pair : priorityMoves) {
-            int score = returnMax(state.clone().placePiece(pair.point, player), currentDepth+1, plyDepth, alpha, localBeta);
+        	HashSet<Point> n = new HashSet<>(m);
+        	n.add(pair.point);
+            int score = returnMax(state.clone().placePiece(pair.point, player), currentDepth+1, plyDepth, alpha, localBeta, n);
             if (score <= alpha) {
             	return alpha;
             }
@@ -68,7 +80,7 @@ public class PandaXPressAI extends CKPlayer
     }
     
     // Return the maximum value of the generated states
-    private int returnMax(BoardModel state, int currentDepth, int plyDepth, int alpha, int beta) {
+    private int returnMax(BoardModel state, int currentDepth, int plyDepth, int alpha, int beta, HashSet<Point> m) {
         if (state.winner() != -1) {
             return evaluateWinner(state.winner());
         }
@@ -77,12 +89,14 @@ public class PandaXPressAI extends CKPlayer
          		   Utils.numberOfPossibleWins(state, otherPlayerValue, player);
         }
         
-        Map<Point, Integer> moves = getAvailableMoves(state);
+        Map<Point, Integer> moves = getAvailableMoves(state, m);
         PriorityQueue<Pair> priorityMoves = Utils.convertToPriorityQueue(moves);
         int localAlpha = Integer.MIN_VALUE;
         for (Pair pair : priorityMoves) {
-            int score = returnMin(state.clone().placePiece(pair.point, otherPlayerValue), currentDepth+1, 
-            		              plyDepth, localAlpha, beta);
+        	HashSet<Point> n = new HashSet<>(m);
+        	n.add(pair.point);
+        	int score = returnMin(state.clone().placePiece(pair.point, otherPlayerValue), currentDepth+1, 
+            		              plyDepth, localAlpha, beta, n);
             if (score >= beta) {
                 return beta;
             }
@@ -102,18 +116,11 @@ public class PandaXPressAI extends CKPlayer
     }
     
     // Get all the available moves
-    private Map<Point, Integer> getAvailableMoves(BoardModel state) 
+    private Map<Point, Integer> getAvailableMoves(BoardModel state, HashSet<Point> p) 
     {
     	Map<Point, Integer> availableMoves = new HashMap<Point, Integer>();
-    	for (int i = 0; i < state.getWidth(); i++)
-    	{
-    		for (int j = 0; j < state.getHeight(); j++)
-    		{
-    			if (state.getSpace(i, j) == player)
-    			{
-    				Utils.getMovesPriority(state, availableMoves, i, j);
-    			}
-    		}
+    	for (Point move: p) {
+    		Utils.getMovesPriority(state, availableMoves, move.x, move.y);
     	}
     	return availableMoves;
     }
@@ -129,7 +136,7 @@ public class PandaXPressAI extends CKPlayer
     @Override
     public Point getMove(BoardModel state) 
     {	
-    	return alphaBetaPruning(state, 9);
+    	return alphaBetaPruning(state, 6);
     }
 
     @Override
@@ -139,4 +146,5 @@ public class PandaXPressAI extends CKPlayer
     }
     
     private byte otherPlayerValue;
+    private HashSet<Point> movesMade;
 }
