@@ -1,5 +1,5 @@
 import java.awt.Point;
-import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.PriorityQueue;
 
@@ -8,24 +8,34 @@ import connectK.BoardModel;
 public final class Utils {
 	private Utils() {}
     
-    // Given the current state, determine the number of possible wins
+    // Return true if index goes out of bound
+    private static boolean checkOutOfRange(int index, int boardDimension)
+    {
+        return index > (boardDimension - 1) || index < 0;
+    }
+    
+    // Given the current state, determine the number of possible wins for a player
     public static int numberOfPossibleWins(BoardModel state, byte player, byte otherPlayer)
     {
-    	int numPaths = 0;;
+    	int numPaths = 0;
+    	int currentCol, currentRow;
+		int maxIndexCol, maxIndexRow;
+		int minIndexCol, minIndexRow;
+		boolean isBadPath = false;
+		boolean isOutOfRange = false;
+		
     	for (int i = 0; i < state.getWidth(); i++)
     	{
     		for (int j = 0; j < state.getHeight(); j++)
     		{
     			if (state.getSpace(i,j) == player)
     			{
-    				int currentCol;
-    				int currentRow;
-    				int maxIndexCol = i + (state.getkLength() - 2);
-    				int maxIndexRow = j + (state.getkLength() - 2);
-    				int minIndexCol = i - (state.getkLength() - 2);
-    				int minIndexRow = j - (state.getkLength() - 2);
-    				boolean isBadPath = false;
-    				boolean isOutOfRange = false;
+    				maxIndexCol = i + (state.getkLength() - 1);
+    				maxIndexRow = j + (state.getkLength() - 1);
+    				minIndexCol = i - (state.getkLength() - 1);
+    				minIndexRow = j - (state.getkLength() - 1);
+    				isBadPath = false;
+    				isOutOfRange = false;
     				
     				// Go right
     				currentCol = i + 1;
@@ -242,7 +252,6 @@ public final class Utils {
     // Get the priority of each move
     public static void getMovesPriority(BoardModel state, Map<Point, Integer> availableMoves, int i, int j)
     {
-    	//int steps = Math.floorDiv(state.getkLength(), 2);
     	int steps = 1;
     	
     	// Go right
@@ -353,10 +362,5 @@ public final class Utils {
 			}
 		}
     }
-    
-    // Return true if index goes out of bound
-    private static boolean checkOutOfRange(int index, int boardDimension)
-    {
-    	return index > (boardDimension - 1) || index < 0;
-    }
+
 }
