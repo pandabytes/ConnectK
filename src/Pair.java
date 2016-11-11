@@ -16,11 +16,22 @@ public class Pair implements Comparator<Pair>
 		point = x;
 		priorityCount = 1;
 	}
+	
+	public Pair(Integer y)
+	{
+		priorityCount = y;
+	}
 
 	@Override
 	public int compare(Pair p1, Pair p2) 
 	{
 		return p2.priorityCount.compareTo(p1.priorityCount);
+	}
+	
+	@Override
+	public String toString()
+	{
+		return point.toString() + " Priority Count: " + priorityCount.toString();
 	}
 
 	public Point point;

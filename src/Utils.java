@@ -249,6 +249,34 @@ public final class Utils {
     	return priorityQueue;
     }
     
+    // 
+    public static PriorityQueue<OrderMinNode> convertToOrderMaxQueue( Map<Point, Integer> availableMoves)
+    {
+    	PriorityQueue<OrderMinNode> priorityQueue = new PriorityQueue<>(10, new OrderMinNode());
+    	
+    	for (Map.Entry<Point, Integer> entry : availableMoves.entrySet())
+    	{
+//    		priorityQueue.add(new OrderMinNode(entry.getValue(), entry.getKey()));
+    		priorityQueue.add(new OrderMinNode(0, entry.getKey(), entry.getValue()));
+    	}
+    	
+    	return priorityQueue;
+    }
+    
+    // 
+    public static PriorityQueue<OrderMaxNode> convertToOrderMinQueue( Map<Point, Integer> availableMoves)
+    {
+    	PriorityQueue<OrderMaxNode> priorityQueue = new PriorityQueue<>(10, new OrderMaxNode());
+    	
+    	for (Map.Entry<Point, Integer> entry : availableMoves.entrySet())
+    	{
+//    		priorityQueue.add(new OrderMaxNode(entry.getValue(), entry.getKey()));
+    		priorityQueue.add(new OrderMaxNode(0, entry.getKey(), entry.getValue()));
+    	}
+    	
+    	return priorityQueue;
+    }
+    
     // Get the priority of each move
     public static void getMovesPriority(BoardModel state, Map<Point, Integer> availableMoves, int i, int j)
     {
