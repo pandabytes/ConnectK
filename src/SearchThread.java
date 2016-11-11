@@ -8,7 +8,7 @@ public class SearchThread extends Thread
 	public SearchThread(BoardModel s, PandaXPressAI ai) 
 	{
 		state = s;
-		depth = 0;
+		depth = 2;
 		AI = ai;
 		bestMove = null;
 	}
@@ -19,7 +19,7 @@ public class SearchThread extends Thread
     	while (true)
     	{
     		bestMove = AI.alphaBetaPruning(state, depth, parent);
-    	
+    		
     		// Debug purposes
 //    		if (depth >= 2)
 //    		{

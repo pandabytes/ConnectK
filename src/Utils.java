@@ -234,21 +234,7 @@ public final class Utils {
     	
     	return numPaths;
     }
-    
-    // Sort the moves based on their priority
-    public static PriorityQueue<Pair> convertToPriorityQueue( Map<Point, Integer> availableMoves)
-    {
-    	PriorityQueue<Pair> priorityQueue = new PriorityQueue<Pair>(10, new Pair());
-    	
-    	for (Map.Entry<Point, Integer> entry : availableMoves.entrySet())
-    	{
-    		Pair p = new Pair(entry.getKey(), entry.getValue());
-    		priorityQueue.add(p);
-    	}
-    	
-    	return priorityQueue;
-    }
-    
+   
     // 
     public static PriorityQueue<OrderMinNode> convertToOrderMaxQueue( Map<Point, Integer> availableMoves)
     {
@@ -256,7 +242,6 @@ public final class Utils {
     	
     	for (Map.Entry<Point, Integer> entry : availableMoves.entrySet())
     	{
-//    		priorityQueue.add(new OrderMinNode(entry.getValue(), entry.getKey()));
     		priorityQueue.add(new OrderMinNode(0, entry.getKey(), entry.getValue()));
     	}
     	
@@ -270,7 +255,6 @@ public final class Utils {
     	
     	for (Map.Entry<Point, Integer> entry : availableMoves.entrySet())
     	{
-//    		priorityQueue.add(new OrderMaxNode(entry.getValue(), entry.getKey()));
     		priorityQueue.add(new OrderMaxNode(0, entry.getKey(), entry.getValue()));
     	}
     	

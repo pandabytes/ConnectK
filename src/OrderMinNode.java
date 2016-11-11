@@ -20,6 +20,10 @@ public class OrderMinNode implements Comparator<OrderMinNode>
 		score = s;
 	}
 	
+	public OrderMinNode(PriorityQueue<OrderMaxNode> queue) {
+		orderMaxNode_queue = queue;
+	}
+	
 	public OrderMinNode()
 	{
 		score = 0;
