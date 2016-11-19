@@ -8,7 +8,7 @@ public class SearchThread extends Thread
 	public SearchThread(BoardModel s, PandaXPressAI ai) 
 	{
 		state = s;
-		depth = 4;
+		depth = 2;
 		AI = ai;
 		bestMove = null;
 	}
@@ -35,6 +35,7 @@ public class SearchThread extends Thread
 //    			System.out.println("Score: " + parent.orderMinNode_queue.peek().score + " Priority: " + parent.orderMinNode_queue.peek().priorityCount);
 //    			System.out.println();
 //    		}
+//    		System.out.println("Depth: " + depth);
     		depth++;
     	}
 	}

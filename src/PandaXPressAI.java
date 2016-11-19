@@ -43,7 +43,7 @@ public class PandaXPressAI extends CKPlayer
         }
         
         if (parent.orderMinNode_queue == null) {
-	       	Map<Point, Integer> moves = getAvailableMoves(state, movesMade);
+	       	Map<Point, Integer> moves = getAvailableMoves(state, movesMade, opponentMoves);
 	       	parent.orderMinNode_queue = Utils.convertToOrderMaxQueue(moves);
         }
         
@@ -82,7 +82,7 @@ public class PandaXPressAI extends CKPlayer
         		   Utils.numberInARow(state, movesMade, otherPlayerValue, player);
         }
         if (o.orderMaxNode_queue == null) {
-	       	Map<Point, Integer> moves = getAvailableMoves(state, oppM);
+	       	Map<Point, Integer> moves = getAvailableMoves(state, oppM, myM);
 	       	o.orderMaxNode_queue = Utils.convertToOrderMinQueue(moves);
         }    
         // Total score belongs to parent node
@@ -125,7 +125,7 @@ public class PandaXPressAI extends CKPlayer
          		   Utils.numberInARow(state, movesMade, otherPlayerValue, player);
         }
         if (o.orderMinNode_queue == null) {
-	       	Map<Point, Integer> moves = getAvailableMoves(state, myM);
+	       	Map<Point, Integer> moves = getAvailableMoves(state, myM, oppM);
 	       	o.orderMinNode_queue = Utils.convertToOrderMaxQueue(moves);
         }
         
@@ -170,10 +170,13 @@ public class PandaXPressAI extends CKPlayer
     }
     
     // Get all the available moves
-    private Map<Point, Integer> getAvailableMoves(BoardModel state, HashSet<Point> p) 
+    private Map<Point, Integer> getAvailableMoves(BoardModel state, HashSet<Point> p, HashSet<Point> q) 
     {
     	Map<Point, Integer> availableMoves = new HashMap<Point, Integer>();
     	for (Point move : p) {
+    		Utils.getMovesPriority(state, availableMoves, move.x, move.y);
+    	}
+    	for (Point move : q) {
     		Utils.getMovesPriority(state, availableMoves, move.x, move.y);
     	}
     	return availableMoves;
