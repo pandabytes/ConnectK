@@ -2,6 +2,9 @@ import java.awt.Point;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.Iterator;
+import java.util.Comparator;
+import java.util.concurrent.PriorityBlockingQueue;
 
 import connectK.BoardModel;
 
@@ -13,6 +16,217 @@ public final class Utils {
     {
         return index > (boardDimension - 1) || index < 0;
     }
+    
+    
+    public static int numberInARow(BoardModel state, HashSet<Point> movesMade, byte player, byte otherPlayer)
+    {
+    	int totalScore = 0;
+    	Comparator<Point> comparator = new Comparator<Point>() {
+    		@Override
+    		public int compare(Point p1, Point p2)
+    		{
+    			Integer x = p1.x;
+    			Integer y = p2.x;
+    			return x.compareTo(y);
+    		}
+    	};
+    	PriorityBlockingQueue<Point> moves = new PriorityBlockingQueue<Point>(10, comparator);
+		
+    	for (Iterator<Point> iterator = moves.iterator(); iterator.hasNext();)
+    	{
+    		Point point = iterator.next();
+    		int numberPiecesFound = 0;
+    		int numberSpaces = 0;
+    		int currentCol, currentRow;
+    		int maxIndexCol = point.x + (state.getkLength() - 1);
+    		int maxIndexRow = point.y + (state.getkLength() - 1);
+    		int minIndexCol = point.x - (state.getkLength() - 1);
+    		int minIndexRow = point.y - (state.getkLength() - 1);
+    		boolean isOutOfRange = false;
+    		
+    		// Go right
+    		currentCol = point.x + 1;
+			if (checkOutOfRange(maxIndexCol, state.getWidth()))
+				isOutOfRange = true;
+			
+			for (; currentCol <= maxIndexCol && !isOutOfRange; currentCol++)
+			{
+				if (state.getSpace(currentCol, point.y) == otherPlayer)
+					break;
+				else if (state.getSpace(currentCol, point.y) == 0)
+					numberSpaces++;
+				else
+					numberPiecesFound++;
+				
+				Point removedPoint = new Point(currentCol, point.y);
+				movesMade.remove(removedPoint);
+			}
+			totalScore += Math.pow(2, Math.pow(state.getkLength(), numberPiecesFound)) + numberSpaces;
+			numberPiecesFound = 0;
+			numberSpaces = 0;
+			isOutOfRange = false;
+			
+			// Go left
+			currentCol = point.x - 1;
+			if (checkOutOfRange(minIndexCol, state.getWidth()))
+				isOutOfRange = true;
+			
+			for (; currentCol >= minIndexCol && !isOutOfRange; currentCol--)
+			{
+				if (state.getSpace(currentCol, point.y) == otherPlayer)
+					break;
+				else if (state.getSpace(currentCol, point.y) == 0)
+					numberSpaces++;
+				else
+					numberPiecesFound++;
+				
+				Point removedPoint = new Point(currentCol, point.y);
+				movesMade.remove(removedPoint);
+			}
+			totalScore += Math.pow(2, Math.pow(state.getkLength(), numberPiecesFound)) + numberSpaces;
+			numberPiecesFound = 0;
+			numberSpaces = 0;
+			isOutOfRange = false;
+			
+			// Go Up
+			currentRow = point.x + 1;
+			if (checkOutOfRange(maxIndexRow, state.getWidth()))
+				isOutOfRange = true;
+			
+			for (; currentRow <= maxIndexRow && !isOutOfRange; currentRow++)
+			{
+				if (state.getSpace(point.x, currentRow) == otherPlayer)
+					break;
+				else if (state.getSpace(point.x, currentRow) == 0)
+					numberSpaces++;
+				else
+					numberPiecesFound++;
+				
+				Point removedPoint = new Point(point.x, currentRow);
+				movesMade.remove(removedPoint);
+			}
+			totalScore += Math.pow(2, Math.pow(state.getkLength(), numberPiecesFound)) + numberSpaces;
+			numberPiecesFound = 0;
+			numberSpaces = 0;
+			isOutOfRange = false;
+			
+			// Go down
+			currentRow = point.y - 1;
+			if (checkOutOfRange(minIndexRow, state.getHeight()))
+				isOutOfRange = true;
+			
+			for (; currentRow >= minIndexRow && !isOutOfRange; currentRow--)
+			{
+				if (state.getSpace(point.x, currentRow) == otherPlayer)
+					break;
+				else if (state.getSpace(point.x, currentRow) == 0)
+					numberSpaces++;
+				else
+					numberPiecesFound++;
+				
+				Point removedPoint = new Point(point.x, currentRow);
+				movesMade.remove(removedPoint);
+			}
+			totalScore += Math.pow(2, Math.pow(state.getkLength(), numberPiecesFound)) + numberSpaces;
+			numberPiecesFound = 0;
+			numberSpaces = 0;
+			isOutOfRange = false;
+			
+			// Go up right
+			currentCol = point.x + 1;
+			currentRow = point.y + 1;
+			if (checkOutOfRange(maxIndexCol, state.getWidth()) || checkOutOfRange(maxIndexRow, state.getHeight()))
+				isOutOfRange = true;
+			
+			for (; currentCol <= maxIndexCol && currentRow <= maxIndexRow && !isOutOfRange; currentCol++, currentRow++)
+			{
+				if (state.getSpace(currentCol, currentRow) == otherPlayer)
+					break;
+				else if (state.getSpace(point.x, currentRow) == 0)
+					numberSpaces++;
+				else
+					numberPiecesFound++;
+				
+				Point removedPoint = new Point(currentCol, currentRow);
+				movesMade.remove(removedPoint);
+			}
+			totalScore += Math.pow(2, Math.pow(state.getkLength(), numberPiecesFound)) + numberSpaces;
+			numberPiecesFound = 0;
+			numberSpaces = 0;
+			isOutOfRange = false;
+			
+			// Go up left
+			currentCol = point.x - 1;
+			currentRow = point.y + 1;
+			if (checkOutOfRange(minIndexCol, state.getWidth()) || checkOutOfRange(maxIndexRow, state.getHeight()))
+				isOutOfRange = true;
+			
+			for (; currentCol >= minIndexCol && currentRow <= maxIndexRow && !isOutOfRange; currentCol--, currentRow++)
+			{
+				if (state.getSpace(currentCol, currentRow) == otherPlayer)
+					break;
+				else if (state.getSpace(point.x, currentRow) == 0)
+					numberSpaces++;
+				else
+					numberPiecesFound++;
+				
+				Point removedPoint = new Point(currentCol, currentRow);
+				movesMade.remove(removedPoint);
+			}
+			totalScore += Math.pow(2, Math.pow(state.getkLength(), numberPiecesFound)) + numberSpaces;
+			numberPiecesFound = 0;
+			numberSpaces = 0;
+			isOutOfRange = false;
+			
+			// Go down right
+			currentCol = point.x + 1;
+			currentRow = point.y - 1;
+			if (checkOutOfRange(maxIndexCol, state.getWidth()) || checkOutOfRange(minIndexRow, state.getHeight()))
+				isOutOfRange = true;
+			
+			for (; currentCol <= maxIndexCol && currentRow >= minIndexRow && !isOutOfRange; currentCol++, currentRow--)
+			{
+				if (state.getSpace(currentCol, currentRow) == otherPlayer)
+					break;
+				else if (state.getSpace(point.x, currentRow) == 0)
+					numberSpaces++;
+				else
+					numberPiecesFound++;
+				
+				Point removedPoint = new Point(currentCol, currentRow);
+				movesMade.remove(removedPoint);
+			}
+			totalScore += Math.pow(2, Math.pow(state.getkLength(), numberPiecesFound)) + numberSpaces;
+			numberPiecesFound = 0;
+			numberSpaces = 0;
+			isOutOfRange = false;
+			
+			// Go down left
+			currentCol = point.x - 1;
+			currentRow = point.y - 1;
+			if (checkOutOfRange(minIndexCol, state.getWidth()) || checkOutOfRange(minIndexRow, state.getHeight()))
+				isOutOfRange = true;
+			
+			for (; currentCol >= minIndexCol && currentRow >= minIndexRow && !isOutOfRange; currentCol--, currentRow--)
+			{
+				if (state.getSpace(currentCol, currentRow) == otherPlayer)
+					break;
+				else if (state.getSpace(point.x, currentRow) == 0)
+					numberSpaces++;
+				else
+					numberPiecesFound++;
+				Point removedPoint = new Point(currentCol, currentRow);
+				movesMade.remove(removedPoint);
+			}
+			
+			totalScore += Math.pow(2, Math.pow(state.getkLength(), numberPiecesFound)) + numberSpaces;
+		}
+    	
+    	return totalScore;
+    }
+    
+    
+    
     
     // Given the current state, determine the number of possible wins for a player
     public static int numberOfPossibleWins(BoardModel state, byte player, byte otherPlayer)

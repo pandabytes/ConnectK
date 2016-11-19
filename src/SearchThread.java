@@ -8,7 +8,7 @@ public class SearchThread extends Thread
 	public SearchThread(BoardModel s, PandaXPressAI ai) 
 	{
 		state = s;
-		depth = 2;
+		depth = 4;
 		AI = ai;
 		bestMove = null;
 	}

@@ -2,9 +2,12 @@ import connectK.CKPlayer;
 import connectK.BoardModel;
 import java.awt.Point;
 import java.util.Map;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.PriorityQueue;
+import java.util.concurrent.PriorityBlockingQueue;
 
 public class PandaXPressAI extends CKPlayer 
 {
@@ -27,27 +30,30 @@ public class PandaXPressAI extends CKPlayer
         if (opp != null) {
         	opponentMoves.add(opp);
         }
-        if (parent.orderMinNode_queue == null) {
-	       	Map<Point, Integer> moves = getAvailableMoves(state, movesMade);
-	       	parent.orderMinNode_queue = Utils.convertToOrderMaxQueue(moves);
-        }
-        // Check if we're the first player
+       
         if (movesMade.size() == 0) {
         	Point p = new Point(state.getWidth() / 2, state.getHeight() / 2);
         	if (state.getSpace(p) != 0) {
         		p.x = p.x+1;
         		p.y = p.y+1;
         	}
+        	
         	movesMade.add(p);
         	return p;
         }
+        
+        if (parent.orderMinNode_queue == null) {
+	       	Map<Point, Integer> moves = getAvailableMoves(state, movesMade);
+	       	parent.orderMinNode_queue = Utils.convertToOrderMaxQueue(moves);
+        }
+        
         int alpha = Integer.MIN_VALUE;
         int beta = Integer.MAX_VALUE;
         Point bestMove = parent.orderMinNode_queue.peek().point;
         
         PriorityQueue<OrderMinNode> copy = new PriorityQueue<>(parent.orderMinNode_queue);
         OrderMinNode order = null;
-
+        
         while(!copy.isEmpty()) {
         	order = copy.remove();
         	HashSet<Point> myM = new HashSet<>(movesMade);
@@ -61,6 +67,7 @@ public class PandaXPressAI extends CKPlayer
             }
         }        
         movesMade.add(bestMove);
+//        System.out.println("at the end # of children: " + parent.orderMinNode_queue.size() + "\n");
         return bestMove;      
     }
     
@@ -71,8 +78,8 @@ public class PandaXPressAI extends CKPlayer
             return evaluateWinner(state.winner());
         }
         if (currentDepth == plyDepth) {
-        	return Utils.numberOfPossibleWins(state, player, otherPlayerValue) - 
-        		   Utils.numberOfPossibleWins(state, otherPlayerValue, player);
+        	return Utils.numberInARow(state, movesMade, player, otherPlayerValue) -
+        		   Utils.numberInARow(state, movesMade, otherPlayerValue, player);
         }
         if (o.orderMaxNode_queue == null) {
 	       	Map<Point, Integer> moves = getAvailableMoves(state, oppM);
@@ -114,8 +121,8 @@ public class PandaXPressAI extends CKPlayer
         }
         
         if (currentDepth == plyDepth) {
-        	return Utils.numberOfPossibleWins(state, player, otherPlayerValue) - 
-         		   Utils.numberOfPossibleWins(state, otherPlayerValue, player);
+        	return Utils.numberInARow(state, movesMade, player, otherPlayerValue) -
+         		   Utils.numberInARow(state, movesMade, otherPlayerValue, player);
         }
         if (o.orderMinNode_queue == null) {
 	       	Map<Point, Integer> moves = getAvailableMoves(state, myM);
@@ -202,7 +209,7 @@ public class PandaXPressAI extends CKPlayer
     	{
     		idsSearch.stop();
     	}
-    	System.out.println("Thread Alive? " + idsSearch.isAlive());
+    	
     	bestMove = idsSearch.bestMove;
     	return bestMove;
     }
@@ -210,12 +217,44 @@ public class PandaXPressAI extends CKPlayer
     @Override
     public Point getMove(BoardModel state, int deadline) 
     {
+//    	Comparator<Point> c = new Comparator<Point>() 
+//    	{
+//    		@Override
+//    		public int compare(Point p1, Point p2)
+//    		{
+//    			Integer x = p1.x;
+//    			Integer y = p2.x;
+//    			return x.compareTo(y);
+//    		}
+//    	};
+//    	
+//    	PriorityBlockingQueue<Point> queue = new PriorityBlockingQueue<Point>(10, c);
+//    	Point p1 = new Point(1,2);
+//    	Point p2 = new Point(0,0);
+//    	Point p3 = new Point(2,2);
+//    	Point p4 = new Point(3,2);
+//    	queue.add(p1);
+//    	queue.add(p2);
+//    	queue.add(p3);
+//    	queue.add(p4);
+//    	
+//    	for (Iterator<Point> iterator = queue.iterator(); iterator.hasNext();)
+//    	{
+//    		Point point = iterator.next();
+//    		if (point.x == 0 && point.y == 0)
+//    		{
+//    			Point p = new Point(0, 0);
+//    			queue.remove(p);
+//    		}
+//    		else
+//    			System.out.println(point);
+//    	}
         return executeMove(state, deadline);
     }
     
 	@Override
-	public Point getMove(BoardModel arg0) {
-		return executeMove(arg0, 5);
+	public Point getMove(BoardModel state) {
+		return executeMove(state, 5);
 	}  
     
     // Private member variables
