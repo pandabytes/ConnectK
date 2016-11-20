@@ -17,22 +17,22 @@ public final class Utils {
         return index > (boardDimension - 1) || index < 0;
     }
     
-    
+    // Return the score based on a given board state
     public static int numberInARow(BoardModel state, HashSet<Point> movesMade, byte player, byte otherPlayer)
     {
     	int totalScore = 0;
-    	Comparator<Point> comparator = new Comparator<Point>() {
-    		@Override
-    		public int compare(Point p1, Point p2)
-    		{
-    			Integer x = p1.x;
-    			Integer y = p2.x;
-    			return x.compareTo(y);
-    		}
-    	};
-    	PriorityBlockingQueue<Point> moves = new PriorityBlockingQueue<Point>(10, comparator);
+//    	Comparator<Point> comparator = new Comparator<Point>() {
+//    		@Override
+//    		public int compare(Point p1, Point p2)
+//    		{
+//    			Integer x = p1.x;
+//    			Integer y = p2.x;
+//    			return x.compareTo(y);
+//    		}
+//    	};
+//    	PriorityBlockingQueue<Point> moves = new PriorityBlockingQueue<Point>(10, comparator);
 		
-    	for (Iterator<Point> iterator = moves.iterator(); iterator.hasNext();)
+    	for (Iterator<Point> iterator = movesMade.iterator(); iterator.hasNext();)
     	{
     		Point point = iterator.next();
     		int numberPiecesFound = 0;
@@ -58,8 +58,8 @@ public final class Utils {
 				else
 					numberPiecesFound++;
 				
-				Point removedPoint = new Point(currentCol, point.y);
-				movesMade.remove(removedPoint);
+//				Point removedPoint = new Point(currentCol, point.y);
+//				movesMade.remove(removedPoint);
 			}
 			totalScore += Math.pow(2, Math.pow(state.getkLength(), numberPiecesFound)) + numberSpaces;
 			numberPiecesFound = 0;
@@ -80,8 +80,8 @@ public final class Utils {
 				else
 					numberPiecesFound++;
 				
-				Point removedPoint = new Point(currentCol, point.y);
-				movesMade.remove(removedPoint);
+//				Point removedPoint = new Point(currentCol, point.y);
+//				movesMade.remove(removedPoint);
 			}
 			totalScore += Math.pow(2, Math.pow(state.getkLength(), numberPiecesFound)) + numberSpaces;
 			numberPiecesFound = 0;
@@ -90,7 +90,7 @@ public final class Utils {
 			
 			// Go Up
 			currentRow = point.x + 1;
-			if (checkOutOfRange(maxIndexRow, state.getWidth()))
+			if (checkOutOfRange(maxIndexRow, state.getHeight()))
 				isOutOfRange = true;
 			
 			for (; currentRow <= maxIndexRow && !isOutOfRange; currentRow++)
@@ -102,8 +102,8 @@ public final class Utils {
 				else
 					numberPiecesFound++;
 				
-				Point removedPoint = new Point(point.x, currentRow);
-				movesMade.remove(removedPoint);
+//				Point removedPoint = new Point(point.x, currentRow);
+//				movesMade.remove(removedPoint);
 			}
 			totalScore += Math.pow(2, Math.pow(state.getkLength(), numberPiecesFound)) + numberSpaces;
 			numberPiecesFound = 0;
@@ -124,8 +124,8 @@ public final class Utils {
 				else
 					numberPiecesFound++;
 				
-				Point removedPoint = new Point(point.x, currentRow);
-				movesMade.remove(removedPoint);
+//				Point removedPoint = new Point(point.x, currentRow);
+//				movesMade.remove(removedPoint);
 			}
 			totalScore += Math.pow(2, Math.pow(state.getkLength(), numberPiecesFound)) + numberSpaces;
 			numberPiecesFound = 0;
@@ -147,8 +147,8 @@ public final class Utils {
 				else
 					numberPiecesFound++;
 				
-				Point removedPoint = new Point(currentCol, currentRow);
-				movesMade.remove(removedPoint);
+//				Point removedPoint = new Point(currentCol, currentRow);
+//				movesMade.remove(removedPoint);
 			}
 			totalScore += Math.pow(2, Math.pow(state.getkLength(), numberPiecesFound)) + numberSpaces;
 			numberPiecesFound = 0;
@@ -170,8 +170,8 @@ public final class Utils {
 				else
 					numberPiecesFound++;
 				
-				Point removedPoint = new Point(currentCol, currentRow);
-				movesMade.remove(removedPoint);
+//				Point removedPoint = new Point(currentCol, currentRow);
+//				movesMade.remove(removedPoint);
 			}
 			totalScore += Math.pow(2, Math.pow(state.getkLength(), numberPiecesFound)) + numberSpaces;
 			numberPiecesFound = 0;
@@ -193,8 +193,8 @@ public final class Utils {
 				else
 					numberPiecesFound++;
 				
-				Point removedPoint = new Point(currentCol, currentRow);
-				movesMade.remove(removedPoint);
+//				Point removedPoint = new Point(currentCol, currentRow);
+//				movesMade.remove(removedPoint);
 			}
 			totalScore += Math.pow(2, Math.pow(state.getkLength(), numberPiecesFound)) + numberSpaces;
 			numberPiecesFound = 0;
@@ -215,8 +215,9 @@ public final class Utils {
 					numberSpaces++;
 				else
 					numberPiecesFound++;
-				Point removedPoint = new Point(currentCol, currentRow);
-				movesMade.remove(removedPoint);
+				
+//				Point removedPoint = new Point(currentCol, currentRow);
+//				movesMade.remove(removedPoint);
 			}
 			
 			totalScore += Math.pow(2, Math.pow(state.getkLength(), numberPiecesFound)) + numberSpaces;
@@ -224,9 +225,6 @@ public final class Utils {
     	
     	return totalScore;
     }
-    
-    
-    
     
     // Given the current state, determine the number of possible wins for a player
     public static int numberOfPossibleWins(BoardModel state, byte player, byte otherPlayer)
