@@ -7,23 +7,29 @@ public class SearchThread extends Thread
 	public SearchThread(BoardModel s, PandaXPressAI ai) 
 	{
 		state = s;
-		depth = 2;
 		AI = ai;
 		bestMove = null;
+		previousBestMove = null;
+		depth = 2;
 	}
 	
 	public void run() 
 	{
 		OrderMaxNode parent = new OrderMaxNode();
-    	while (true)
+    	while (!Thread.interrupted() && !AI.is_timeOut)
     	{
     		bestMove = AI.alphaBetaPruning(state, depth, parent);
+    		if (!Thread.interrupted())
+    		{
+    			previousBestMove = new Point(bestMove.x, bestMove.y);
+    		}
     		depth++;
     	}
 	}
 	
-	private BoardModel state;
-	private int depth;
 	public Point bestMove;
+	public Point previousBestMove;
+	private int depth;
+	private BoardModel state;
 	private PandaXPressAI AI;
 }

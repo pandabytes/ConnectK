@@ -13,6 +13,7 @@ public class PandaXPressAI extends CKPlayer
     {
         super(player, state);
         teamName = "PandaXPress";
+        is_timeOut = false;
         otherPlayerValue = getOtherPlayerValue(player);
         movesMade = new HashSet<>();
         opponentMoves = new HashSet<>();
@@ -62,9 +63,13 @@ public class PandaXPressAI extends CKPlayer
                 bestMove = order.point;
                 alpha = score;
             }
-        }        
-        movesMade.add(bestMove);
-//        System.out.println("at the end # of children: " + parent.orderMinNode_queue.size() + "\n");
+            if (is_timeOut) {
+            	break;
+            }
+        }
+        if (!is_timeOut) {
+        	movesMade.add(bestMove);
+        }
         return bestMove;      
     }
     
@@ -104,7 +109,9 @@ public class PandaXPressAI extends CKPlayer
         	if (score < localBeta) {
               localBeta = score;
         	}
-        	
+        	if (is_timeOut) {
+        		break;
+        	}
         }
     	o.score = totalScore / count;
         return localBeta; 
@@ -152,6 +159,9 @@ public class PandaXPressAI extends CKPlayer
 			if (localAlpha < score) {
 			  localAlpha = score;
 			}
+			if (is_timeOut) {
+				break;
+			}
         }
     	o.orderMinNode_queue = new PriorityQueue<OrderMinNode>(o.orderMinNode_queue);
   	  	o.score = totalScore / count;
@@ -187,17 +197,17 @@ public class PandaXPressAI extends CKPlayer
         else return 1;
     }
     
-    @SuppressWarnings("deprecation")
+    // Execute a move using a child thread
     public Point executeMove(BoardModel state, int time) 
     {	
     	Point bestMove = null;
     	SearchThread idsSearch = new SearchThread(state, this);
     	idsSearch.start();
     	
-    	// Wait for the child thread for 5 seconds
+    	// Make the main thread sleep for about 5 seconds
     	try 
     	{
-			idsSearch.join((long)time - 3);
+    		Thread.sleep((long)time - 3);
 		}
     	catch (InterruptedException e) 
     	{
@@ -207,10 +217,17 @@ public class PandaXPressAI extends CKPlayer
     	// Stop thread if it's still executing after 5 seconds
     	if (idsSearch.isAlive())
     	{
-    		idsSearch.stop();
+    		idsSearch.interrupt();
+    		is_timeOut = true;
+    		try {
+				idsSearch.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
     	}
     	
-    	bestMove = idsSearch.bestMove;
+    	bestMove = idsSearch.previousBestMove;
+    	is_timeOut = false;
     	return bestMove;
     }
 
@@ -226,6 +243,7 @@ public class PandaXPressAI extends CKPlayer
 	}  
     
     // Private member variables
+	public boolean is_timeOut;
     private byte otherPlayerValue;
     private HashSet<Point> movesMade;  
     private HashSet<Point> opponentMoves;
