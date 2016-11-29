@@ -226,7 +226,7 @@ public class PandaXPressAI extends CKPlayer
 			}
     	}
     	
-    	bestMove = idsSearch.previousBestMove;
+    	bestMove = idsSearch.finalBestMove;
     	is_timeOut = false;
     	return bestMove;
     }

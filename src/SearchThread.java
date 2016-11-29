@@ -9,7 +9,7 @@ public class SearchThread extends Thread
 		state = s;
 		AI = ai;
 		bestMove = null;
-		previousBestMove = null;
+		finalBestMove = null;
 		depth = 2;
 	}
 	
@@ -19,16 +19,16 @@ public class SearchThread extends Thread
     	while (!Thread.interrupted() && !AI.is_timeOut)
     	{
     		bestMove = AI.alphaBetaPruning(state, depth, parent);
-    		if (!Thread.interrupted())
+    		if (!Thread.interrupted() || finalBestMove == null)
     		{
-    			previousBestMove = new Point(bestMove.x, bestMove.y);
+    			finalBestMove = new Point(bestMove.x, bestMove.y);
     		}
     		depth++;
     	}
 	}
 	
 	public Point bestMove;
-	public Point previousBestMove;
+	public Point finalBestMove;
 	private int depth;
 	private BoardModel state;
 	private PandaXPressAI AI;
