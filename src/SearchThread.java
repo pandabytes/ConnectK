@@ -1,7 +1,6 @@
 import connectK.BoardModel;
 import java.awt.Point;
 
-
 public class SearchThread extends Thread 
 {
 	public SearchThread(BoardModel s, PandaXPressAI ai) 
@@ -13,15 +12,16 @@ public class SearchThread extends Thread
 		depth = 2;
 	}
 	
+	@Override
 	public void run() 
 	{
 		OrderMaxNode parent = new OrderMaxNode();
-    	while (!Thread.interrupted() && !AI.is_timeOut)
-    	{
+    	while (!Thread.interrupted())
+    	{	
     		bestMove = AI.alphaBetaPruning(state, depth, parent);
-    		if (!Thread.interrupted() || finalBestMove == null)
+    		if (!this.isInterrupted())
     		{
-    			finalBestMove = new Point(bestMove.x, bestMove.y);
+    			finalBestMove = bestMove;
     		}
     		depth++;
     	}
