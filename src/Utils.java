@@ -21,20 +21,9 @@ public final class Utils {
     public static int numberInARow(BoardModel state, HashSet<Point> movesMade, byte player, byte otherPlayer)
     {
     	int totalScore = 0;
-//    	Comparator<Point> comparator = new Comparator<Point>() {
-//    		@Override
-//    		public int compare(Point p1, Point p2)
-//    		{
-//    			Integer x = p1.x;
-//    			Integer y = p2.x;
-//    			return x.compareTo(y);
-//    		}
-//    	};
-//    	PriorityBlockingQueue<Point> moves = new PriorityBlockingQueue<Point>(10, comparator);
 		
-    	for (Iterator<Point> iterator = movesMade.iterator(); iterator.hasNext();)
+    	for (Point point : movesMade)
     	{
-    		Point point = iterator.next();
     		int numberPiecesFound = 0;
     		int numberSpaces = 0;
     		int currentCol, currentRow;
@@ -42,410 +31,151 @@ public final class Utils {
     		int maxIndexRow = point.y + (state.getkLength() - 1);
     		int minIndexCol = point.x - (state.getkLength() - 1);
     		int minIndexRow = point.y - (state.getkLength() - 1);
-    		boolean isOutOfRange = false;
     		
     		// Go right
-    		currentCol = point.x + 1;
-			if (checkOutOfRange(maxIndexCol, state.getWidth()))
-				isOutOfRange = true;
+    		currentCol = point.x;
 			
-			for (; currentCol <= maxIndexCol && !isOutOfRange; currentCol++)
+			for (; currentCol <= maxIndexCol; currentCol++)
 			{
-				if (state.getSpace(currentCol, point.y) == otherPlayer)
+				if (checkOutOfRange(currentCol, state.getWidth()) || state.getSpace(currentCol, point.y) == otherPlayer)
 					break;
 				else if (state.getSpace(currentCol, point.y) == 0)
 					numberSpaces++;
 				else
 					numberPiecesFound++;
-				
-//				Point removedPoint = new Point(currentCol, point.y);
-//				movesMade.remove(removedPoint);
 			}
 			totalScore += Math.pow(2, Math.pow(state.getkLength(), numberPiecesFound)) + numberSpaces;
 			numberPiecesFound = 0;
 			numberSpaces = 0;
-			isOutOfRange = false;
+			
 			
 			// Go left
-			currentCol = point.x - 1;
-			if (checkOutOfRange(minIndexCol, state.getWidth()))
-				isOutOfRange = true;
+			currentCol = point.x;
 			
-			for (; currentCol >= minIndexCol && !isOutOfRange; currentCol--)
+			for (; currentCol >= minIndexCol; currentCol--)
 			{
-				if (state.getSpace(currentCol, point.y) == otherPlayer)
+				if (checkOutOfRange(currentCol, state.getWidth()) || state.getSpace(currentCol, point.y) == otherPlayer)
 					break;
 				else if (state.getSpace(currentCol, point.y) == 0)
 					numberSpaces++;
 				else
 					numberPiecesFound++;
-				
-//				Point removedPoint = new Point(currentCol, point.y);
-//				movesMade.remove(removedPoint);
 			}
 			totalScore += Math.pow(2, Math.pow(state.getkLength(), numberPiecesFound)) + numberSpaces;
 			numberPiecesFound = 0;
 			numberSpaces = 0;
-			isOutOfRange = false;
+			
 			
 			// Go Up
-			currentRow = point.x + 1;
-			if (checkOutOfRange(maxIndexRow, state.getHeight()))
-				isOutOfRange = true;
+			currentRow = point.y;
 			
-			for (; currentRow <= maxIndexRow && !isOutOfRange; currentRow++)
+			for (; currentRow <= maxIndexRow; currentRow++)
 			{
-				if (state.getSpace(point.x, currentRow) == otherPlayer)
+				if (checkOutOfRange(currentRow, state.getHeight()) || state.getSpace(point.x, currentRow) == otherPlayer)
 					break;
 				else if (state.getSpace(point.x, currentRow) == 0)
 					numberSpaces++;
 				else
 					numberPiecesFound++;
-				
-//				Point removedPoint = new Point(point.x, currentRow);
-//				movesMade.remove(removedPoint);
 			}
 			totalScore += Math.pow(2, Math.pow(state.getkLength(), numberPiecesFound)) + numberSpaces;
 			numberPiecesFound = 0;
 			numberSpaces = 0;
-			isOutOfRange = false;
+			
 			
 			// Go down
-			currentRow = point.y - 1;
-			if (checkOutOfRange(minIndexRow, state.getHeight()))
-				isOutOfRange = true;
+			currentRow = point.y;
 			
-			for (; currentRow >= minIndexRow && !isOutOfRange; currentRow--)
+			for (; currentRow >= minIndexRow; currentRow--)
 			{
-				if (state.getSpace(point.x, currentRow) == otherPlayer)
+				if (checkOutOfRange(currentRow, state.getHeight()) || state.getSpace(point.x, currentRow) == otherPlayer)
 					break;
 				else if (state.getSpace(point.x, currentRow) == 0)
 					numberSpaces++;
 				else
 					numberPiecesFound++;
-				
-//				Point removedPoint = new Point(point.x, currentRow);
-//				movesMade.remove(removedPoint);
 			}
 			totalScore += Math.pow(2, Math.pow(state.getkLength(), numberPiecesFound)) + numberSpaces;
 			numberPiecesFound = 0;
 			numberSpaces = 0;
-			isOutOfRange = false;
+			
 			
 			// Go up right
-			currentCol = point.x + 1;
-			currentRow = point.y + 1;
-			if (checkOutOfRange(maxIndexCol, state.getWidth()) || checkOutOfRange(maxIndexRow, state.getHeight()))
-				isOutOfRange = true;
+			currentCol = point.x;
+			currentRow = point.y;
 			
-			for (; currentCol <= maxIndexCol && currentRow <= maxIndexRow && !isOutOfRange; currentCol++, currentRow++)
+			for (; currentCol <= maxIndexCol && currentRow <= maxIndexRow; currentCol++, currentRow++)
 			{
-				if (state.getSpace(currentCol, currentRow) == otherPlayer)
+				if (checkOutOfRange(currentRow, state.getHeight()) || checkOutOfRange(currentCol, state.getWidth()) || 
+					state.getSpace(currentCol, currentRow) == otherPlayer)
 					break;
 				else if (state.getSpace(point.x, currentRow) == 0)
 					numberSpaces++;
 				else
 					numberPiecesFound++;
-				
-//				Point removedPoint = new Point(currentCol, currentRow);
-//				movesMade.remove(removedPoint);
 			}
 			totalScore += Math.pow(2, Math.pow(state.getkLength(), numberPiecesFound)) + numberSpaces;
 			numberPiecesFound = 0;
 			numberSpaces = 0;
-			isOutOfRange = false;
+			
 			
 			// Go up left
-			currentCol = point.x - 1;
-			currentRow = point.y + 1;
-			if (checkOutOfRange(minIndexCol, state.getWidth()) || checkOutOfRange(maxIndexRow, state.getHeight()))
-				isOutOfRange = true;
+			currentCol = point.x;
+			currentRow = point.y;
 			
-			for (; currentCol >= minIndexCol && currentRow <= maxIndexRow && !isOutOfRange; currentCol--, currentRow++)
+			for (; currentCol >= minIndexCol && currentRow <= maxIndexRow; currentCol--, currentRow++)
 			{
-				if (state.getSpace(currentCol, currentRow) == otherPlayer)
+				if (checkOutOfRange(currentRow, state.getHeight()) || checkOutOfRange(currentCol, state.getWidth()) || 
+					state.getSpace(currentCol, currentRow) == otherPlayer)
 					break;
 				else if (state.getSpace(point.x, currentRow) == 0)
 					numberSpaces++;
 				else
 					numberPiecesFound++;
-				
-//				Point removedPoint = new Point(currentCol, currentRow);
-//				movesMade.remove(removedPoint);
 			}
 			totalScore += Math.pow(2, Math.pow(state.getkLength(), numberPiecesFound)) + numberSpaces;
 			numberPiecesFound = 0;
 			numberSpaces = 0;
-			isOutOfRange = false;
+			
 			
 			// Go down right
-			currentCol = point.x + 1;
-			currentRow = point.y - 1;
-			if (checkOutOfRange(maxIndexCol, state.getWidth()) || checkOutOfRange(minIndexRow, state.getHeight()))
-				isOutOfRange = true;
+			currentCol = point.x;
+			currentRow = point.y;
 			
-			for (; currentCol <= maxIndexCol && currentRow >= minIndexRow && !isOutOfRange; currentCol++, currentRow--)
+			for (; currentCol <= maxIndexCol && currentRow >= minIndexRow; currentCol++, currentRow--)
 			{
-				if (state.getSpace(currentCol, currentRow) == otherPlayer)
+				if (checkOutOfRange(currentRow, state.getHeight()) || checkOutOfRange(currentCol, state.getWidth()) || 
+					state.getSpace(currentCol, currentRow) == otherPlayer)
 					break;
 				else if (state.getSpace(point.x, currentRow) == 0)
 					numberSpaces++;
 				else
 					numberPiecesFound++;
-				
-//				Point removedPoint = new Point(currentCol, currentRow);
-//				movesMade.remove(removedPoint);
 			}
 			totalScore += Math.pow(2, Math.pow(state.getkLength(), numberPiecesFound)) + numberSpaces;
 			numberPiecesFound = 0;
 			numberSpaces = 0;
-			isOutOfRange = false;
+			
 			
 			// Go down left
 			currentCol = point.x - 1;
 			currentRow = point.y - 1;
-			if (checkOutOfRange(minIndexCol, state.getWidth()) || checkOutOfRange(minIndexRow, state.getHeight()))
-				isOutOfRange = true;
 			
-			for (; currentCol >= minIndexCol && currentRow >= minIndexRow && !isOutOfRange; currentCol--, currentRow--)
+			for (; currentCol >= minIndexCol && currentRow >= minIndexRow; currentCol--, currentRow--)
 			{
-				if (state.getSpace(currentCol, currentRow) == otherPlayer)
+				if (checkOutOfRange(currentRow, state.getHeight()) || checkOutOfRange(currentCol, state.getWidth()) || 
+					state.getSpace(currentCol, currentRow) == otherPlayer)
 					break;
 				else if (state.getSpace(point.x, currentRow) == 0)
 					numberSpaces++;
 				else
 					numberPiecesFound++;
-				
-//				Point removedPoint = new Point(currentCol, currentRow);
-//				movesMade.remove(removedPoint);
 			}
-			
 			totalScore += Math.pow(2, Math.pow(state.getkLength(), numberPiecesFound)) + numberSpaces;
 		}
-    	
     	return totalScore;
     }
-    
-    // Given the current state, determine the number of possible wins for a player
-    public static int numberOfPossibleWins(BoardModel state, byte player, byte otherPlayer)
-    {
-    	int numPaths = 0;
-    	int currentCol, currentRow;
-		int maxIndexCol, maxIndexRow;
-		int minIndexCol, minIndexRow;
-		boolean isBadPath = false;
-		boolean isOutOfRange = false;
-		
-    	for (int i = 0; i < state.getWidth(); i++)
-    	{
-    		for (int j = 0; j < state.getHeight(); j++)
-    		{
-    			if (state.getSpace(i,j) == player)
-    			{
-    				maxIndexCol = i + (state.getkLength() - 1);
-    				maxIndexRow = j + (state.getkLength() - 1);
-    				minIndexCol = i - (state.getkLength() - 1);
-    				minIndexRow = j - (state.getkLength() - 1);
-    				isBadPath = false;
-    				isOutOfRange = false;
-    				
-    				// Go right
-    				currentCol = i + 1;
-    				if (checkOutOfRange(maxIndexCol, state.getWidth()))
-    					isOutOfRange = true;
-    				
-    				while (currentCol <= maxIndexCol && !isOutOfRange)
-    				{
-    					if (state.getSpace(currentCol, j) == otherPlayer)
-    					{
-    						isBadPath = true;
-    						break;
-    					}
-    					currentCol++;
-    				}
-    				
-    				if (!isBadPath && !isOutOfRange)
-    				{
-    					numPaths++;
-    				}
-    				
-    				isBadPath = false;
-    				isOutOfRange = false;
-    				
-    				// Go left
-    				currentCol = i - 1;
-    				if (checkOutOfRange(minIndexCol, state.getWidth()))
-    					isOutOfRange = true;
-    				
-    				while (currentCol >= minIndexCol && !isOutOfRange)
-    				{
-    					if (state.getSpace(currentCol, j) == otherPlayer)
-    					{
-    						isBadPath = true;
-    						break;
-    					}
-    					currentCol--;
-    				}
-    				
-    				if (!isBadPath && !isOutOfRange)
-    				{
-    					numPaths++;
-    				}
-    				
-    				isBadPath = false;
-    				isOutOfRange = false;
-    				
-    				// Go up
-    				currentRow = j + 1;
-    				if (checkOutOfRange(maxIndexRow, state.getHeight()))
-    					isOutOfRange = true;
-    				
-    				while (currentRow <= maxIndexRow && !isOutOfRange)
-    				{
-    					if (state.getSpace(i, currentRow) == otherPlayer)
-    					{
-    						isBadPath = true;
-    						break;
-    					}
-    					currentRow++;
-    				}
-    				
-    				if (!isBadPath && !isOutOfRange)
-    				{
-    					numPaths++;
-    				}
-    				
-    				isBadPath = false;
-    				isOutOfRange = false;
-    				
-    				// Go down
-    				currentRow = j - 1;
-    				if (checkOutOfRange(minIndexRow, state.getHeight()))
-    					isOutOfRange = true;
-    				
-    				while (currentRow >= minIndexRow && !isOutOfRange)
-    				{
-    					if (state.getSpace(i, currentRow) == otherPlayer)
-    					{
-    						isBadPath = true;
-    						break;
-    					}
-    					currentRow--;
-    				}
-    				
-    				if (!isBadPath && !isOutOfRange)
-    				{
-    					numPaths++;
-    				}
-    				
-    				isBadPath = false;
-    				isOutOfRange = false;
-    				
-    				// Go up right
-    				currentCol = i + 1;
-    				currentRow = j + 1;
-    				if (checkOutOfRange(maxIndexCol, state.getWidth()) || checkOutOfRange(maxIndexRow, state.getHeight()))
-    					isOutOfRange = true;
-    				
-    				while (currentCol <= maxIndexCol && currentRow <= maxIndexRow && !isOutOfRange)
-    				{
-    					if (state.getSpace(currentCol, currentRow) == otherPlayer)
-    					{
-    						isBadPath = true;
-    						break;
-    					}
-    					currentCol++;
-    					currentRow++;
-    				}
-    				
-    				if (!isBadPath && !isOutOfRange)
-    				{
-    					numPaths++;
-    				}
-    				
-    				isBadPath = false;
-    				isOutOfRange = false;
-    				
-    				// Go up left
-    				currentCol = i - 1;
-    				currentRow = j + 1;
-    				if (checkOutOfRange(minIndexCol, state.getWidth()) || checkOutOfRange(maxIndexRow, state.getHeight()))
-    					isOutOfRange = true;
-    				
-    				while (currentCol >= minIndexCol && currentRow <= maxIndexRow && !isOutOfRange)
-    				{
-    					if (state.getSpace(currentCol, currentRow) == otherPlayer)
-    					{
-    						isBadPath = true;
-    						break;
-    					}
-    					currentCol--;
-    					currentRow++;
-    				}
-    				
-    				if (!isBadPath && !isOutOfRange)
-    				{
-    					numPaths++;
-    				}
-    				
-    				isBadPath = false;
-    				isOutOfRange = false;
-    				
-    				// Go down right
-    				currentCol = i + 1;
-    				currentRow = j - 1;
-    				if (checkOutOfRange(maxIndexCol, state.getWidth()) || checkOutOfRange(minIndexRow, state.getHeight()))
-    					isOutOfRange = true;
-    				
-    				while (currentCol <= maxIndexCol && currentRow >= minIndexRow && !isOutOfRange)
-    				{
-    					if (state.getSpace(currentCol, currentRow) == otherPlayer)
-    					{
-    						isBadPath = true;
-    						break;
-    					}
-    					currentCol++;
-    					currentRow--;
-    				}
-    				
-    				if (!isBadPath && !isOutOfRange)
-    				{
-    					numPaths++;
-    				}
-    				
-    				isBadPath = false;
-    				isOutOfRange = false;
-    				
-    				// Go down left
-    				currentCol = i - 1;
-    				currentRow = j - 1;
-    				if (checkOutOfRange(minIndexCol, state.getWidth()) || checkOutOfRange(minIndexRow, state.getHeight()))
-    					isOutOfRange = true;
-    				
-    				while (currentCol >= minIndexCol && currentRow >= minIndexRow && !isOutOfRange)
-    				{
-    					if (state.getSpace(currentCol, currentRow) == otherPlayer)
-    					{
-    						isBadPath = true;
-    						break;
-    					}
-    					currentCol--;
-    					currentRow--;
-    				}
-    				
-    				if (!isBadPath && !isOutOfRange)
-    				{
-    					numPaths++;
-    				}
-    				
-    				isBadPath = false;
-    				isOutOfRange = false;
-    			}
-    		}
-    	}
-    	
-    	return numPaths;
-    }
+ 
    
     // 
     public static PriorityQueue<OrderMinNode> convertToOrderMaxQueue( Map<Point, Integer> availableMoves)

@@ -87,6 +87,7 @@ public class PandaXPressAI extends CKPlayer
 	       	Map<Point, Integer> moves = getAvailableMoves(state, oppM, myM);
 	       	o.orderMaxNode_queue = Utils.convertToOrderMinQueue(moves);
         }    
+        
         // Total score belongs to parent node
         int totalScore = 0, count = 0;
         int localBeta = Integer.MAX_VALUE;
@@ -200,6 +201,9 @@ public class PandaXPressAI extends CKPlayer
     // Execute a move using a child thread
     public Point executeMove(BoardModel state, int time) 
     {	
+    	if (movesMade.size() == 0)
+    		return alphaBetaPruning(state, 2, null);
+    	
     	long currentTime = System.currentTimeMillis();
     	Point bestMove = null;
     	SearchThread idsSearch = new SearchThread(state, this);
@@ -207,13 +211,13 @@ public class PandaXPressAI extends CKPlayer
 
     	// Make the main thread sleep for about 5 seconds
     	try {
-    		Thread.sleep((long)time - 25);
+    		Thread.sleep(5000);
 		}
     	catch (InterruptedException e) {
 			e.printStackTrace();
 		}
     	
-    	// Stop thread if it's still executing after 5 seconds
+    	// Stop thread and return a move
 		idsSearch.interrupt();
 	    is_timeOut = true;
 		

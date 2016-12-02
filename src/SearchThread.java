@@ -1,4 +1,5 @@
 import connectK.BoardModel;
+
 import java.awt.Point;
 
 public class SearchThread extends Thread 
