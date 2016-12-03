@@ -52,9 +52,9 @@ public class PandaXPressAI extends CKPlayer
         PriorityQueue<OrderMinNode> copy = new PriorityQueue<>(parent.orderMinNode_queue);
         OrderMinNode order = null;
         
-        // My Changes
-        int bestScore = Integer.MIN_VALUE;
+        // Debugging variables
         boolean changed = false;
+        int bestScore = Integer.MIN_VALUE;
         
         while(!copy.isEmpty()) {
         	order = copy.remove();

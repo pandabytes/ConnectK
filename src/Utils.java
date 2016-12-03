@@ -31,11 +31,13 @@ public final class Utils {
     		int maxIndexRow = point.y + (state.getkLength() - 1);
     		int minIndexCol = point.x - (state.getkLength() - 1);
     		int minIndexRow = point.y - (state.getkLength() - 1);
+    		boolean isOutOfRange = false;
     		
     		// Go right
     		currentCol = point.x;
-			
-			for (; currentCol <= maxIndexCol; currentCol++)
+    		if (checkOutOfRange(maxIndexCol, state.getWidth()))
+				isOutOfRange = true;
+			for (; currentCol <= maxIndexCol && !isOutOfRange; currentCol++)
 			{
 				if (checkOutOfRange(currentCol, state.getWidth()) || state.getSpace(currentCol, point.y) == otherPlayer)
 					break;
@@ -47,12 +49,13 @@ public final class Utils {
 			totalScore += Math.pow(2, 2*numberPiecesFound) + numberSpaces;
 			numberPiecesFound = 0;
 			numberSpaces = 0;
-			
+			isOutOfRange = false;
 			
 			// Go left
 			currentCol = point.x;
-			
-			for (; currentCol >= minIndexCol; currentCol--)
+			if (checkOutOfRange(minIndexCol, state.getWidth()))
+				isOutOfRange = true;
+			for (; currentCol >= minIndexCol && !isOutOfRange; currentCol--)
 			{
 				if (checkOutOfRange(currentCol, state.getWidth()) || state.getSpace(currentCol, point.y) == otherPlayer)
 					break;
@@ -64,12 +67,13 @@ public final class Utils {
 			totalScore += Math.pow(2, 2*numberPiecesFound) + numberSpaces;
 			numberPiecesFound = 0;
 			numberSpaces = 0;
-			
+			isOutOfRange = false;
 			
 			// Go Up
 			currentRow = point.y;
-			
-			for (; currentRow <= maxIndexRow; currentRow++)
+			if (checkOutOfRange(maxIndexRow, state.getHeight()))
+				isOutOfRange = true;
+			for (; currentRow <= maxIndexRow && !isOutOfRange; currentRow++)
 			{
 				if (checkOutOfRange(currentRow, state.getHeight()) || state.getSpace(point.x, currentRow) == otherPlayer)
 					break;
@@ -81,12 +85,13 @@ public final class Utils {
 			totalScore += Math.pow(2, 2*numberPiecesFound) + numberSpaces;
 			numberPiecesFound = 0;
 			numberSpaces = 0;
-			
+			isOutOfRange = false;
 			
 			// Go down
 			currentRow = point.y;
-			
-			for (; currentRow >= minIndexRow; currentRow--)
+			if (checkOutOfRange(minIndexRow, state.getHeight()))
+				isOutOfRange = true;
+			for (; currentRow >= minIndexRow && !isOutOfRange; currentRow--)
 			{
 				if (checkOutOfRange(currentRow, state.getHeight()) || state.getSpace(point.x, currentRow) == otherPlayer)
 					break;
@@ -98,13 +103,14 @@ public final class Utils {
 			totalScore += Math.pow(2, 2*numberPiecesFound) + numberSpaces;
 			numberPiecesFound = 0;
 			numberSpaces = 0;
-			
+			isOutOfRange = false;
 			
 			// Go up right
 			currentCol = point.x;
 			currentRow = point.y;
-			
-			for (; currentCol <= maxIndexCol && currentRow <= maxIndexRow; currentCol++, currentRow++)
+			if (checkOutOfRange(maxIndexCol, state.getWidth()) || checkOutOfRange(maxIndexRow, state.getHeight()))
+				isOutOfRange = true;
+			for (; currentCol <= maxIndexCol && currentRow <= maxIndexRow && !isOutOfRange; currentCol++, currentRow++)
 			{
 				if (checkOutOfRange(currentRow, state.getHeight()) || checkOutOfRange(currentCol, state.getWidth()) || 
 					state.getSpace(currentCol, currentRow) == otherPlayer)
@@ -117,13 +123,14 @@ public final class Utils {
 			totalScore += Math.pow(2, 2*numberPiecesFound) + numberSpaces;
 			numberPiecesFound = 0;
 			numberSpaces = 0;
-			
+			isOutOfRange = false;
 			
 			// Go up left
 			currentCol = point.x;
 			currentRow = point.y;
-			
-			for (; currentCol >= minIndexCol && currentRow <= maxIndexRow; currentCol--, currentRow++)
+			if (checkOutOfRange(minIndexCol, state.getWidth()) || checkOutOfRange(maxIndexRow, state.getHeight()))
+				isOutOfRange = true;
+			for (; currentCol >= minIndexCol && currentRow <= maxIndexRow && !isOutOfRange; currentCol--, currentRow++)
 			{
 				if (checkOutOfRange(currentRow, state.getHeight()) || checkOutOfRange(currentCol, state.getWidth()) || 
 					state.getSpace(currentCol, currentRow) == otherPlayer)
@@ -136,13 +143,14 @@ public final class Utils {
 			totalScore += Math.pow(2, 2*numberPiecesFound) + numberSpaces;
 			numberPiecesFound = 0;
 			numberSpaces = 0;
-			
+			isOutOfRange = false;
 			
 			// Go down right
 			currentCol = point.x;
 			currentRow = point.y;
-			
-			for (; currentCol <= maxIndexCol && currentRow >= minIndexRow; currentCol++, currentRow--)
+			if (checkOutOfRange(maxIndexCol, state.getWidth()) || checkOutOfRange(minIndexRow, state.getHeight()))
+				isOutOfRange = true;
+			for (; currentCol <= maxIndexCol && currentRow >= minIndexRow && !isOutOfRange; currentCol++, currentRow--)
 			{
 				if (checkOutOfRange(currentRow, state.getHeight()) || checkOutOfRange(currentCol, state.getWidth()) || 
 					state.getSpace(currentCol, currentRow) == otherPlayer)
@@ -155,13 +163,14 @@ public final class Utils {
 			totalScore += Math.pow(2, 2*numberPiecesFound) + numberSpaces;
 			numberPiecesFound = 0;
 			numberSpaces = 0;
-			
+			isOutOfRange = false;
 			
 			// Go down left
 			currentCol = point.x - 1;
 			currentRow = point.y - 1;
-			
-			for (; currentCol >= minIndexCol && currentRow >= minIndexRow; currentCol--, currentRow--)
+			if (checkOutOfRange(minIndexCol, state.getWidth()) || checkOutOfRange(minIndexRow, state.getHeight()))
+				isOutOfRange = true;
+			for (; currentCol >= minIndexCol && currentRow >= minIndexRow && !isOutOfRange; currentCol--, currentRow--)
 			{
 				if (checkOutOfRange(currentRow, state.getHeight()) || checkOutOfRange(currentCol, state.getWidth()) || 
 					state.getSpace(currentCol, currentRow) == otherPlayer)
