@@ -44,7 +44,7 @@ public final class Utils {
 				else
 					numberPiecesFound++;
 			}
-			totalScore += Math.pow(2, Math.pow(state.getkLength(), numberPiecesFound)) + numberSpaces;
+			totalScore += Math.pow(2, 2*numberPiecesFound) + numberSpaces;
 			numberPiecesFound = 0;
 			numberSpaces = 0;
 			
@@ -61,7 +61,7 @@ public final class Utils {
 				else
 					numberPiecesFound++;
 			}
-			totalScore += Math.pow(2, Math.pow(state.getkLength(), numberPiecesFound)) + numberSpaces;
+			totalScore += Math.pow(2, 2*numberPiecesFound) + numberSpaces;
 			numberPiecesFound = 0;
 			numberSpaces = 0;
 			
@@ -78,7 +78,7 @@ public final class Utils {
 				else
 					numberPiecesFound++;
 			}
-			totalScore += Math.pow(2, Math.pow(state.getkLength(), numberPiecesFound)) + numberSpaces;
+			totalScore += Math.pow(2, 2*numberPiecesFound) + numberSpaces;
 			numberPiecesFound = 0;
 			numberSpaces = 0;
 			
@@ -95,7 +95,7 @@ public final class Utils {
 				else
 					numberPiecesFound++;
 			}
-			totalScore += Math.pow(2, Math.pow(state.getkLength(), numberPiecesFound)) + numberSpaces;
+			totalScore += Math.pow(2, 2*numberPiecesFound) + numberSpaces;
 			numberPiecesFound = 0;
 			numberSpaces = 0;
 			
@@ -114,7 +114,7 @@ public final class Utils {
 				else
 					numberPiecesFound++;
 			}
-			totalScore += Math.pow(2, Math.pow(state.getkLength(), numberPiecesFound)) + numberSpaces;
+			totalScore += Math.pow(2, 2*numberPiecesFound) + numberSpaces;
 			numberPiecesFound = 0;
 			numberSpaces = 0;
 			
@@ -133,7 +133,7 @@ public final class Utils {
 				else
 					numberPiecesFound++;
 			}
-			totalScore += Math.pow(2, Math.pow(state.getkLength(), numberPiecesFound)) + numberSpaces;
+			totalScore += Math.pow(2, 2*numberPiecesFound) + numberSpaces;
 			numberPiecesFound = 0;
 			numberSpaces = 0;
 			
@@ -152,7 +152,7 @@ public final class Utils {
 				else
 					numberPiecesFound++;
 			}
-			totalScore += Math.pow(2, Math.pow(state.getkLength(), numberPiecesFound)) + numberSpaces;
+			totalScore += Math.pow(2, 2*numberPiecesFound) + numberSpaces;
 			numberPiecesFound = 0;
 			numberSpaces = 0;
 			
@@ -171,7 +171,7 @@ public final class Utils {
 				else
 					numberPiecesFound++;
 			}
-			totalScore += Math.pow(2, Math.pow(state.getkLength(), numberPiecesFound)) + numberSpaces;
+			totalScore += Math.pow(2, 2*numberPiecesFound) + numberSpaces;
 		}
     	return totalScore;
     }

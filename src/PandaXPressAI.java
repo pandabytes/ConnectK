@@ -17,7 +17,7 @@ public class PandaXPressAI extends CKPlayer
         otherPlayerValue = getOtherPlayerValue(player);
         movesMade = new HashSet<>();
         opponentMoves = new HashSet<>();
-    }  
+    }
     
     // Do alpha beta pruning to find the best worst move
     public Point alphaBetaPruning(BoardModel state, int plyDepth, OrderMaxNode parent) {
@@ -52,6 +52,10 @@ public class PandaXPressAI extends CKPlayer
         PriorityQueue<OrderMinNode> copy = new PriorityQueue<>(parent.orderMinNode_queue);
         OrderMinNode order = null;
         
+        // My Changes
+        int bestScore = Integer.MIN_VALUE;
+        boolean changed = false;
+        
         while(!copy.isEmpty()) {
         	order = copy.remove();
         	HashSet<Point> myM = new HashSet<>(movesMade);
@@ -59,9 +63,12 @@ public class PandaXPressAI extends CKPlayer
             int score = returnMin(state.clone().placePiece(order.point, player), 1, plyDepth, 
             		alpha, beta, opponentMoves, myM, order);
             
+            System.out.println("Score: " + score + " -- Point: " + order.point.x + ", " + order.point.y);
             if (score > alpha) {
                 bestMove = order.point;
                 alpha = score;
+                bestScore = score;
+                changed = true;
             }
             if (is_timeOut) {
             	break;
@@ -70,6 +77,9 @@ public class PandaXPressAI extends CKPlayer
         if (!is_timeOut) {
         	movesMade.add(bestMove);
         }
+
+        System.out.println("*** Best score *** " + ((changed) ? bestScore : "-Inf - No Change"));
+        System.out.println("*** Best move *** " + bestMove.x + ", " + bestMove.y + "\n");
         return bestMove;      
     }
     
@@ -80,8 +90,8 @@ public class PandaXPressAI extends CKPlayer
             return evaluateWinner(state.winner());
         }
         if (currentDepth == plyDepth) {
-        	return Utils.numberInARow(state, movesMade, player, otherPlayerValue) -
-        		   Utils.numberInARow(state, movesMade, otherPlayerValue, player);
+        	return Utils.numberInARow(state, myM, player, otherPlayerValue) -
+        		   Utils.numberInARow(state, oppM, otherPlayerValue, player);
         }
         if (o.orderMaxNode_queue == null) {
 	       	Map<Point, Integer> moves = getAvailableMoves(state, oppM, myM);
@@ -126,8 +136,8 @@ public class PandaXPressAI extends CKPlayer
         }
         
         if (currentDepth == plyDepth) {
-        	return Utils.numberInARow(state, movesMade, player, otherPlayerValue) -
-         		   Utils.numberInARow(state, movesMade, otherPlayerValue, player);
+        	return Utils.numberInARow(state, myM, player, otherPlayerValue) -
+         		   Utils.numberInARow(state, oppM, otherPlayerValue, player);
         }
         if (o.orderMinNode_queue == null) {
 	       	Map<Point, Integer> moves = getAvailableMoves(state, myM, oppM);
@@ -174,7 +184,10 @@ public class PandaXPressAI extends CKPlayer
         if (winner == player) {
             return Integer.MAX_VALUE;
         }
-        return Integer.MIN_VALUE;
+        else if (winner == otherPlayerValue) {
+        	return Integer.MIN_VALUE;
+        }
+        return 0;
     }
     
     // Get all the available moves

@@ -19,6 +19,7 @@ public class SearchThread extends Thread
 		OrderMaxNode parent = new OrderMaxNode();
     	while (!Thread.interrupted())
     	{	
+    		System.out.println("Depth: " + depth);
     		bestMove = AI.alphaBetaPruning(state, depth, parent);
     		if (!this.isInterrupted())
     		{
