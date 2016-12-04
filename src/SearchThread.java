@@ -16,10 +16,12 @@ public class SearchThread extends Thread
 	@Override
 	public void run() 
 	{
+		// Create the root
 		OrderMaxNode parent = new OrderMaxNode();
+		
+		// Go down each depth incrementally
     	while (!Thread.interrupted())
     	{	
-    		System.out.println("Depth: " + depth);
     		bestMove = AI.alphaBetaPruning(state, depth, parent);
     		if (!this.isInterrupted())
     		{
@@ -29,7 +31,7 @@ public class SearchThread extends Thread
     	}
 	}
 	
-	public Point bestMove;
+	private Point bestMove;
 	public Point finalBestMove;
 	private int depth;
 	private BoardModel state;

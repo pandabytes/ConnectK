@@ -24,10 +24,6 @@ public class PandaXPressAI extends CKPlayer
         if (plyDepth <= 1) { 
             return null;
         }
-        Point opp = state.getLastMove();
-        if (opp != null) {
-        	opponentMoves.add(opp);
-        }
        
         if (movesMade.size() == 0) {
         	Point p = new Point(state.getWidth() / 2, state.getHeight() / 2);
@@ -52,10 +48,6 @@ public class PandaXPressAI extends CKPlayer
         PriorityQueue<OrderMinNode> copy = new PriorityQueue<>(parent.orderMinNode_queue);
         OrderMinNode order = null;
         
-        // Debugging variables
-        boolean changed = false;
-        int bestScore = Integer.MIN_VALUE;
-        
         while(!copy.isEmpty()) {
         	order = copy.remove();
         	HashSet<Point> myM = new HashSet<>(movesMade);
@@ -63,23 +55,15 @@ public class PandaXPressAI extends CKPlayer
             int score = returnMin(state.clone().placePiece(order.point, player), 1, plyDepth, 
             		alpha, beta, opponentMoves, myM, order);
             
-            System.out.println("Score: " + score + " -- Point: " + order.point.x + ", " + order.point.y);
             if (score > alpha) {
                 bestMove = order.point;
                 alpha = score;
-                bestScore = score;
-                changed = true;
             }
             if (is_timeOut) {
             	break;
             }
         }
-        if (!is_timeOut) {
-        	movesMade.add(bestMove);
-        }
 
-        System.out.println("*** Best score *** " + ((changed) ? bestScore : "-Inf - No Change"));
-        System.out.println("*** Best move *** " + bestMove.x + ", " + bestMove.y + "\n");
         return bestMove;      
     }
     
@@ -89,6 +73,8 @@ public class PandaXPressAI extends CKPlayer
         if (state.winner() != -1) {
             return evaluateWinner(state.winner());
         }
+        
+        // Return the score of the leaf node
         if (currentDepth == plyDepth) {
         	return Utils.numberInARow(state, myM, player, otherPlayerValue) -
         		   Utils.numberInARow(state, oppM, otherPlayerValue, player);
@@ -103,6 +89,7 @@ public class PandaXPressAI extends CKPlayer
         int localBeta = Integer.MAX_VALUE;
         PriorityQueue<OrderMaxNode> copy = new PriorityQueue<>(o.orderMaxNode_queue);
         OrderMaxNode order = null;
+        
         while (!copy.isEmpty())
         {
         	order = copy.remove();
@@ -135,6 +122,7 @@ public class PandaXPressAI extends CKPlayer
             return evaluateWinner(state.winner());
         }
         
+        // Return the score of the leaf node
         if (currentDepth == plyDepth) {
         	return Utils.numberInARow(state, myM, player, otherPlayerValue) -
          		   Utils.numberInARow(state, oppM, otherPlayerValue, player);
@@ -147,7 +135,6 @@ public class PandaXPressAI extends CKPlayer
         // totalScore belongs to parent node
         int totalScore = 0, count = 0;
         int localAlpha = Integer.MIN_VALUE;
-        
         PriorityQueue<OrderMinNode> copy = new PriorityQueue<>(o.orderMinNode_queue);
         OrderMinNode order = null;
         
@@ -179,7 +166,7 @@ public class PandaXPressAI extends CKPlayer
         return localAlpha; 
     }
     
-    // Evaluate the winner
+    // Evaluate the winner and return a score based on the winner
     private int evaluateWinner(byte winner) {
         if (winner == player) {
             return Integer.MAX_VALUE;
@@ -214,10 +201,18 @@ public class PandaXPressAI extends CKPlayer
     // Execute a move using a child thread
     public Point executeMove(BoardModel state, int time) 
     {	
+        Point opp = state.getLastMove();
+        if (opp != null) {
+        	opponentMoves.add(opp);
+        }
+        
     	if (movesMade.size() == 0)
-    		return alphaBetaPruning(state, 2, null);
+    	{
+    		Point move = alphaBetaPruning(state, 2, null);
+    		movesMade.add(move);
+    		return move;
+    	}
     	
-    	long currentTime = System.currentTimeMillis();
     	Point bestMove = null;
     	SearchThread idsSearch = new SearchThread(state, this);
     	idsSearch.start();
@@ -240,8 +235,8 @@ public class PandaXPressAI extends CKPlayer
 			e.printStackTrace();
 		}
     	
-    	System.out.println("Thread finished " + (System.currentTimeMillis() - currentTime));
     	bestMove = idsSearch.finalBestMove;
+    	movesMade.add(bestMove);
     	is_timeOut = false;
     	return bestMove;
     }

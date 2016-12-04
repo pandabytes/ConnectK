@@ -1,10 +1,8 @@
 import java.awt.Point;
 import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.PriorityQueue;
 
-
+// Class represents Max
 public class OrderMaxNode implements Comparator<OrderMaxNode>
 {
 	public OrderMaxNode(int s, Point p, int priority) {
@@ -44,9 +42,9 @@ public class OrderMaxNode implements Comparator<OrderMaxNode>
 		return compareScore;
 	}
 	
+	// Member variables
 	public Integer score;
 	public Point point;
 	public Integer priorityCount;
 	public PriorityQueue<OrderMinNode> orderMinNode_queue;
-	
 }

@@ -2,10 +2,6 @@ import java.awt.Point;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.PriorityQueue;
-import java.util.Iterator;
-import java.util.Comparator;
-import java.util.concurrent.PriorityBlockingQueue;
-
 import connectK.BoardModel;
 
 public final class Utils {
@@ -185,8 +181,7 @@ public final class Utils {
     	return totalScore;
     }
  
-   
-    // 
+    // Get the queue containing OrderMinNode's
     public static PriorityQueue<OrderMinNode> convertToOrderMaxQueue( Map<Point, Integer> availableMoves)
     {
     	PriorityQueue<OrderMinNode> priorityQueue = new PriorityQueue<>(10, new OrderMinNode());
@@ -199,7 +194,7 @@ public final class Utils {
     	return priorityQueue;
     }
     
-    // 
+    // Get the queue containing OrderMaxNode's
     public static PriorityQueue<OrderMaxNode> convertToOrderMinQueue( Map<Point, Integer> availableMoves)
     {
     	PriorityQueue<OrderMaxNode> priorityQueue = new PriorityQueue<>(10, new OrderMaxNode());
